@@ -4,7 +4,8 @@ ParamsClass::ParamsClass(QObject* parent)
 	: QObject(parent)
 {
 	if (createOrConnectParamsBd())
-		createTable();
+		if (createTable())
+			writeFirstParamsDb();
 }
 
 
@@ -34,9 +35,8 @@ bool ParamsClass::createOrConnectParamsBd()
 			emit errorLog("Error in ParamsClass::createOrConnectParamsBd() when try to create/open startingParamsDb. Error:\n" + mainConnection.lastError().text());
 		}
 		else
-		{
 			qDebug() << "NOT OPEN startingParamsDb";
-		}
+
 		return false;
 	}
 
@@ -50,15 +50,117 @@ bool ParamsClass::createOrConnectParamsBd()
 bool ParamsClass::createTable()
 {
 	QSqlQuery query(mainConnection);
-	QString queryString = ("CREATE TABLE DbGeneralParams ( ip TEXT, port TEXT, login TEXT,password TEXT);");
+	QString queryString = ("CREATE TABLE DbGeneralParams (ip TEXT, port TEXT, name TEXT, login TEXT, password TEXT);");
 
 	if (!query.exec(queryString))
 	{
-		qDebug() << "Error in ParamsClass::createTable() when try to create DbGeneralParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError();
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::createTable() when try to create DbGeneralParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError();
+		}
+		else
+			qDebug() << "NOT CREATE DbGeneralParams";
+
 		return false;
 	}
 
 	qDebug() << "CREATE DbGeneralParams";
 
 	return true;
+}
+
+
+
+void ParamsClass::writeFirstParamsDb()
+{
+	std::string host;
+	qDebug() << "Host DataBase:";
+	std::cin >> host;
+	host = validateHost(host);
+
+	std::string port;
+	qDebug() << "Port DataBase:";
+	std::cin >> port;
+
+	std::string name;
+	qDebug() << "Name DataBase:";
+	std::cin >> name;
+
+	std::string login;
+	qDebug() << "Login for connection to DataBase:";
+	std::cin >> login;
+
+	std::string password;
+	qDebug() << "Password for connection to DataBase:";
+	std::cin >> password;
+
+	QSqlQuery query(mainConnection);
+
+	query.prepare("INSERT INTO DbGeneralParams (ip,  port, name, login, password) VALUES (?, ?, ?, ?, ?)");
+	query.addBindValue(QString::fromStdString(host));
+	query.addBindValue(QString::fromStdString(port));
+	query.addBindValue(QString::fromStdString(name));
+	query.addBindValue(QString::fromStdString(login));
+	query.addBindValue(QString::fromStdString(password));
+
+	if (!query.exec())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::writeFirstParamsDb() when try to insert value in DbGeneralParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError();
+		}
+		else
+			qDebug() << "NOT INSERT in DbGeneralParams";
+	}
+	else
+		qDebug() << "Params for connection to DataBase was write";
+}
+
+
+
+std::string ParamsClass::validateHost(std::string tempHost)
+{
+	std::string tempHostLocal = tempHost;
+
+	do {
+		if (tempHostLocal == "localhost") break;
+
+		QRegularExpression strPattern(QString(R"([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})"));
+
+		QRegularExpressionMatch matchReg = strPattern.match(QString::fromStdString(tempHostLocal));
+
+		if (matchReg.hasMatch())
+		{
+			qDebug() << matchReg.captured();
+			break;
+		}
+
+		qDebug() << "Not find in your messege host with format \"0.0.0.0\". Try again";
+
+		std::cin >> tempHostLocal;
+
+	} while (true);
+
+	return tempHostLocal;
+}
+
+
+
+std::string ParamsClass::validatePort(std::string tempPort)
+{
+	std::string tempPortLocal = tempPort;
+
+	do {
+
+
+		qDebug() << "Not correct format for PORT. Try again";
+
+		std::cin >> tempPortLocal;
+
+	} while (true);
+
+	return tempPortLocal;
+
+
+
 }
