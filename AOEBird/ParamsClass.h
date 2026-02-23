@@ -2,13 +2,14 @@
 
 #include <QObject>
 #include <QSqlDatabase>
-#include <QDebug.h>;
-#include <QFile.h>
-#include <qsqlerror.h>
-#include <QSqlQuery.h>
+#include <QDebug>;
+#include <QFile>
+#include <qsqlerror>
+#include <QSqlQuery>
 #include <iostream>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
+#include <qtimer>
 
 class ParamsClass  : public QObject
 {
@@ -23,10 +24,11 @@ public:
 	void writeFirstParamsDb();
 	std::string validateHost(std::string tempHost);
 	std::string validatePort(std::string tempPort);
+	std::string validateNameLoginPassword(std::string tempString);
 
 signals:
 	void errorLog(const QString&);
-
+	void signalFromParamsClassForConnectToMainDb();
 
 private:
 	QSqlDatabase mainConnection;

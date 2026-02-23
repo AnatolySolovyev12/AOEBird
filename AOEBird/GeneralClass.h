@@ -15,6 +15,8 @@ public:
 	GeneralClass(QObject* parent);
 	~GeneralClass();
 
+	void test();
+
 private:
 	ParamsClass* paramsClass = nullptr;
 	DataBaseClass* dataBaseClass = nullptr;

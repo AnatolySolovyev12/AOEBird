@@ -6,6 +6,10 @@ ParamsClass::ParamsClass(QObject* parent)
 	if (createOrConnectParamsBd())
 		if (createTable())
 			writeFirstParamsDb();
+
+	QTimer::singleShot(1000, [this]() {
+		emit signalFromParamsClassForConnectToMainDb();
+		});
 }
 
 
@@ -56,7 +60,8 @@ bool ParamsClass::createTable()
 	{
 		if (query.lastError().isValid())
 		{
-			qDebug() << "Error in ParamsClass::createTable() when try to create DbGeneralParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError();
+			qDebug() << "Error in ParamsClass::createTable() when try to create DbGeneralParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::createTable() when try to create DbGeneralParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
 		}
 		else
 			qDebug() << "NOT CREATE DbGeneralParams";
@@ -81,18 +86,22 @@ void ParamsClass::writeFirstParamsDb()
 	std::string port;
 	qDebug() << "Port DataBase:";
 	std::cin >> port;
+	port = validatePort(port);
 
 	std::string name;
 	qDebug() << "Name DataBase:";
 	std::cin >> name;
+	validateNameLoginPassword(name);
 
 	std::string login;
 	qDebug() << "Login for connection to DataBase:";
 	std::cin >> login;
+	validateNameLoginPassword(login);
 
 	std::string password;
 	qDebug() << "Password for connection to DataBase:";
 	std::cin >> password;
+	validateNameLoginPassword(password);
 
 	QSqlQuery query(mainConnection);
 
@@ -107,7 +116,8 @@ void ParamsClass::writeFirstParamsDb()
 	{
 		if (query.lastError().isValid())
 		{
-			qDebug() << "Error in ParamsClass::writeFirstParamsDb() when try to insert value in DbGeneralParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError();
+			qDebug() << "Error in ParamsClass::writeFirstParamsDb() when try to insert value in DbGeneralParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::writeFirstParamsDb() when try to insert value in DbGeneralParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
 		}
 		else
 			qDebug() << "NOT INSERT in DbGeneralParams";
@@ -135,7 +145,7 @@ std::string ParamsClass::validateHost(std::string tempHost)
 			break;
 		}
 
-		qDebug() << "Not find in your messege host with format \"0.0.0.0\". Try again";
+		qDebug() << "Not find in your messege HOST with format \"0.0.0.0\". Try again";
 
 		std::cin >> tempHostLocal;
 
@@ -151,16 +161,44 @@ std::string ParamsClass::validatePort(std::string tempPort)
 	std::string tempPortLocal = tempPort;
 
 	do {
+		QRegularExpression strPattern(QString(R"([0-9]{4,5})"));
 
+		QRegularExpressionMatch matchReg = strPattern.match(QString::fromStdString(tempPortLocal));
 
-		qDebug() << "Not correct format for PORT. Try again";
+		if (matchReg.hasMatch())
+		{
+			qDebug() << matchReg.captured();
+			break;
+		}
+
+		qDebug() << "Not find in your messege HOST with format \"4-5 (digit)\". Try again";
 
 		std::cin >> tempPortLocal;
 
 	} while (true);
 
 	return tempPortLocal;
+}
 
 
 
+std::string ParamsClass::validateNameLoginPassword(std::string tempString)
+{
+	std::string tempStringForCheck = tempString;
+
+	do {
+		
+		if (tempStringForCheck.length() >= 25 || tempStringForCheck.length() <= 2)
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect length for your messege. Try again";
+
+		std::cin >> tempStringForCheck;
+
+	} while (true);
+
+	return tempStringForCheck;
 }
