@@ -6,7 +6,6 @@ GeneralClass::GeneralClass(QObject *parent)
 	paramsClass =  new ParamsClass(nullptr);
 
 	dataBaseClass = new DataBaseClass(nullptr);
-	qDebug() << "TEST2";
 }
 
 GeneralClass::~GeneralClass()

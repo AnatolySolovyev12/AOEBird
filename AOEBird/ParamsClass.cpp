@@ -3,9 +3,8 @@
 ParamsClass::ParamsClass(QObject* parent)
 	: QObject(parent)
 {
-	if (!createOrConnectParamsBd())
+	if (createOrConnectParamsBd())
 		createTable();
-	qDebug() << "TEST2";
 }
 
 
@@ -18,71 +17,48 @@ ParamsClass::~ParamsClass()
 
 bool ParamsClass::createOrConnectParamsBd()
 {
+	QFile tempForCheckDb;
+	tempForCheckDb.setFileName("startingParamsDb");
+	bool tempForCreateTable = true;
+
+	if (tempForCheckDb.exists()) tempForCreateTable = false;
 
 	mainConnection = QSqlDatabase::addDatabase("QSQLITE");
-
 	mainConnection.setDatabaseName("startingParamsDb");
-	qDebug() << "TEST!";
 
 	if (!mainConnection.open())
 	{
-
-		emit errorLog("Cannot open database: " /*+ mainConnection.lastError().text() + '\n'*/);
-
+		if (mainConnection.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::createOrConnectParamsBd() when try to create/open startingParamsDb. Error:\n" << mainConnection.lastError().text();
+			emit errorLog("Error in ParamsClass::createOrConnectParamsBd() when try to create/open startingParamsDb. Error:\n" + mainConnection.lastError().text());
+		}
+		else
+		{
+			qDebug() << "NOT OPEN startingParamsDb";
+		}
 		return false;
 	}
 
-	return true;
+	qDebug() << "OPEN startingParamsDb";
+
+	return tempForCreateTable;
 }
 
 
 
 bool ParamsClass::createTable()
 {
+	QSqlQuery query(mainConnection);
+	QString queryString = ("CREATE TABLE DbGeneralParams ( ip TEXT, port TEXT, login TEXT,password TEXT);");
 
-
-	/*
-
-QSqlQuery query;
-
-db_input = (R"(
-CREATE TABLE channelTable (
-  number TEXT,
-  date TEXT,
-  channelFirst TEXT,
-  channelSecond TEXT,
-  channelThird TEXT,
-  channelFour TEXT,
-  repeatCounter INTEGER DEFAULT 0 NOT NULL,
-  UNIQUE(number, date)
-);
-	   )");
-
-if (!query.exec(db_input)) // Âûïîëíÿåì çàïðîñ. exec - âåðí¸ò true åñëè óñïåøíî. Ñèíòàêñèñ äîëæåí îòâå÷àòü çàïðàøèâàåìîé ÁÄ.
-{
-	if (query.lastError().text() != "table channelTable already exists Unable to execute statemen")
+	if (!query.exec(queryString))
 	{
+		qDebug() << "Error in ParamsClass::createTable() when try to create DbGeneralParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError();
+		return false;
 	}
-	else
-		emit messegeLog("Unable to create a channelTable. " + query.lastError().text() + '\n', QColor(240, 14, 14));
-}
-else
-{
-	emit messegeLog("channelTable was create!\n", QColor(255, 128, 0));
-}
 
-db_input = (R"(
-CREATE TABLE counterTable (
-  number TEXT,
-  date TEXT,
-  channelFirst TEXT,
-  channelSecond TEXT,
-  channelThird TEXT,
-  channelFour TEXT,
-  repeatCounter INTEGER DEFAULT 0 NOT NULL,
-  UNIQUE(number, date)
-);
-	   )");
-*/
+	qDebug() << "CREATE DbGeneralParams";
 
+	return true;
 }
