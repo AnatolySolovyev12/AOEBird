@@ -8,7 +8,7 @@ ParamsClass::ParamsClass(QObject* parent)
 			writeFirstParamsDb();
 
 	QTimer::singleShot(1000, [this]() {
-		emit signalFromParamsClassForConnectToMainDb();
+		sendStringListForMainDb();
 		});
 }
 
@@ -201,4 +201,33 @@ std::string ParamsClass::validateNameLoginPassword(std::string tempString)
 	} while (true);
 
 	return tempStringForCheck;
+}
+
+
+
+void ParamsClass::sendStringListForMainDb()
+{
+	QSqlQuery query(mainConnection);
+	QString queryString = ("SELECT ip, port, name, login, password FROM DbGeneralParams");
+	QStringList tempList;
+
+	if (!query.exec(queryString) || !query.next())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::sendStringListForMainDb() when try to read from DbGeneralParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::sendStringListForMainDb() when try to read from DbGeneralParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT READ from DbGeneralParams table";
+	}
+	else
+	{
+		for (int count = 0; count < 5; count++)
+		{
+			tempList << query.value(count).toString();
+		}
+
+		emit signalFromParamsClassForConnectToMainDb(tempList);
+	}
 }

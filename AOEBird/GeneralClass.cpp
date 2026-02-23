@@ -11,8 +11,8 @@ GeneralClass::GeneralClass(QObject *parent)
 GeneralClass::~GeneralClass()
 {}
 
-void GeneralClass::test()
+void GeneralClass::test(QStringList tempString)
 {
-	qDebug() << "Catch signal from ParamsClass";
+	qDebug() << tempString;
 }
 

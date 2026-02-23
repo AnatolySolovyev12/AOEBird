@@ -25,10 +25,11 @@ public:
 	std::string validateHost(std::string tempHost);
 	std::string validatePort(std::string tempPort);
 	std::string validateNameLoginPassword(std::string tempString);
+	void sendStringListForMainDb();
 
 signals:
 	void errorLog(const QString&);
-	void signalFromParamsClassForConnectToMainDb();
+	void signalFromParamsClassForConnectToMainDb(QStringList tempListSending);
 
 private:
 	QSqlDatabase mainConnection;
