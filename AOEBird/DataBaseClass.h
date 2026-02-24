@@ -1,6 +1,12 @@
 #pragma once
 
 #include <QObject>
+#include <QSqlDatabase>
+#include <QDebug>;
+#include <QFile>
+#include <qsqlerror>
+#include <QSqlQuery>
+#include <iostream>
 
 class DataBaseClass  : public QObject
 {
@@ -9,5 +15,11 @@ class DataBaseClass  : public QObject
 public:
 	DataBaseClass(QObject *parent);
 	~DataBaseClass();
+
+	void connectionToMainDb(QStringList signalList);
+	void test();
+
+private:
+	QSqlDatabase mainDbConnection;
 };
 

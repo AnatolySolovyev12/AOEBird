@@ -16,6 +16,15 @@ ParamsClass::ParamsClass(QObject* parent)
 
 ParamsClass::~ParamsClass()
 {
+	if (mainConnection.isOpen())
+	{
+		mainConnection.close();
+	}
+
+	if (QSqlDatabase::contains("sqlite_connection"))
+	{
+		QSqlDatabase::removeDatabase("sqlite_connection");
+	}
 }
 
 
@@ -28,7 +37,7 @@ bool ParamsClass::createOrConnectParamsBd()
 
 	if (tempForCheckDb.exists()) tempForCreateTable = false;
 
-	mainConnection = QSqlDatabase::addDatabase("QSQLITE");
+	mainConnection = QSqlDatabase::addDatabase("QSQLITE", "sqlite_connection");
 	mainConnection.setDatabaseName("startingParamsDb");
 
 	if (!mainConnection.open())
@@ -133,8 +142,6 @@ std::string ParamsClass::validateHost(std::string tempHost)
 	std::string tempHostLocal = tempHost;
 
 	do {
-		if (tempHostLocal == "localhost") break;
-
 		QRegularExpression strPattern(QString(R"([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})"));
 
 		QRegularExpressionMatch matchReg = strPattern.match(QString::fromStdString(tempHostLocal));
