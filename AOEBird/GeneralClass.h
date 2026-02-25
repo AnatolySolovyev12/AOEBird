@@ -4,6 +4,8 @@
 
 #include <ParamsClass.h>
 #include <DataBaseClass.h>
+#include "SMTP.h"
+
 
 class GeneralClass : public QObject
 {
@@ -16,5 +18,6 @@ public:
 private:
 	ParamsClass* paramsClass = nullptr;
 	DataBaseClass* dataBaseClass = nullptr;
+	SMTP* smtpClass = nullptr;
 };
 

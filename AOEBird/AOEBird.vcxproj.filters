@@ -35,6 +35,9 @@
     <ClCompile Include="ParamsClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SMTP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GeneralClass.h">
@@ -44,6 +47,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ParamsClass.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SMTP.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
