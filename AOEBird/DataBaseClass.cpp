@@ -98,24 +98,25 @@ void DataBaseClass::insertInQueueAndHistory(QStringList tempList)
 
 	for (int countTable = 1; countTable <= 2; countTable++)
 	{
-		query.prepare("INSERT INTO ? (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, sms_send, date, time) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (mail) DO NOTHING;");
-		query.addBindValue(countTable == 1 ? "queue_notice" : "history");
+		query.prepare(QString("INSERT INTO ? (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, sms_send, date, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
+			.arg(countTable == 1 ? "queue_notice" : "history"));
+		//query.addBindValue(countTable == 1 ? "queue_notice" : "history");
 		query.addBindValue(tempList[0]);
 		query.addBindValue(tempList[1]);
 		query.addBindValue(tempList[2]);
 		query.addBindValue(tempList[3]);
 		query.addBindValue(tempList[4]);
 		query.addBindValue(tempList[5]);
+		query.addBindValue(tempList[6]);
+		query.addBindValue(tempList[7]);
 		query.addBindValue(QDate::currentDate().toString());
 		query.addBindValue(QTime::currentTime().toString());
 
 		if (!query.exec())
 		{
-			qDebug() << "Error in DataBaseClass::insertInQueueAndHistory() when try to insert value on countTable = " + QString::number(countTable) + ". Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			qDebug() << "Error in DataBaseClass::insertInQueueAndHistory() when try to insert value in " << (countTable == 1 ? "queue_notice" : "history") << ". Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 		}
 		else
-			qDebug() << "VALUE was add in " << (countTable == 1 ? "queue_notice" : "history)");
+			qDebug() << "VALUE was add in " << (countTable == 1 ? "queue_notice" : "history");
 	}
-
-
 }
