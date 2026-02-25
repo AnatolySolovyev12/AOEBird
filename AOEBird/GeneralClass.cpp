@@ -11,8 +11,7 @@ GeneralClass::GeneralClass(QObject *parent)
 		dataBaseClass->insertInUsers("bakalavr12@mail.ru", "art54011212");
 
 		QStringList tempList;
-		tempList << "1" << "1" << "1" << "89898989898" << "asd@mail.ru" << "TRUE" << "FALSE" << "TRUE";
-		qDebug() << tempList;
+		tempList << "1" << "1" << "1" << "89825313114" << "bakalavr12@mail.ru" << "TRUE" << "FALSE" << "TRUE" << "FALSE";
 		dataBaseClass->insertInQueueAndHistory(tempList);
 
 		});

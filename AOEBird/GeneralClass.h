@@ -5,8 +5,6 @@
 #include <ParamsClass.h>
 #include <DataBaseClass.h>
 
-
-
 class GeneralClass : public QObject
 {
 	Q_OBJECT

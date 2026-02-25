@@ -48,14 +48,14 @@ void DataBaseClass::createMainTables()
 {
 	QSqlQuery query(mainDbConnection);
 
-	if (!query.exec("CREATE TABLE IF NOT EXISTS queue_notice (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME);"))
+	if (!query.exec("CREATE TABLE IF NOT EXISTS queue_notice (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME);"))
 	{
 		qDebug() << "Error in DataBaseClass::connectionToMainDb() when try to create queue_notice table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 	}
 	else
 		qDebug() << "TABLE queue_notice WAS ADD OR SKIP";
 
-	if (!query.exec("CREATE TABLE IF NOT EXISTS history (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME);"))
+	if (!query.exec("CREATE TABLE IF NOT EXISTS history (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME);"))
 	{
 		qDebug() << "Error in DataBaseClass::connectionToMainDb() when try to create history table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 	}
@@ -95,12 +95,15 @@ void DataBaseClass::insertInUsers(QString tempMail, QString tempPass)
 void DataBaseClass::insertInQueueAndHistory(QStringList tempList)
 {
 	QSqlQuery query(mainDbConnection);
+	QString date = QDate::currentDate().toString();
+	QString time = QTime::currentTime().toString();
 
 	for (int countTable = 1; countTable <= 2; countTable++)
 	{
-		query.prepare(QString("INSERT INTO ? (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, sms_send, date, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
+		// ¬ Postgre подготовленный запрос на вставку в таблицу почему то иначе интрепретируетс€ и будет гарантированна€ ошибка. ƒелаем дл€ таблицы втсавку через .arg() если это требуетс€.
+		query.prepare(QString("INSERT INTO %1 (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, mail_send, sms_send, date, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
 			.arg(countTable == 1 ? "queue_notice" : "history"));
-		//query.addBindValue(countTable == 1 ? "queue_notice" : "history");
+
 		query.addBindValue(tempList[0]);
 		query.addBindValue(tempList[1]);
 		query.addBindValue(tempList[2]);
@@ -109,8 +112,9 @@ void DataBaseClass::insertInQueueAndHistory(QStringList tempList)
 		query.addBindValue(tempList[5]);
 		query.addBindValue(tempList[6]);
 		query.addBindValue(tempList[7]);
-		query.addBindValue(QDate::currentDate().toString());
-		query.addBindValue(QTime::currentTime().toString());
+		query.addBindValue(tempList[8]);
+		query.addBindValue(date);
+		query.addBindValue(time);
 
 		if (!query.exec())
 		{
