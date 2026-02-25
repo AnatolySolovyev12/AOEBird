@@ -19,6 +19,9 @@ public:
 
 	void connectionToMainDb(QStringList signalList);
 	void createMainTables();
+	void insertInUsers(QString tempMail, QString tempPass);
+	void insertInQueueAndHistory(QStringList tempList);
+
 
 private:
 	QSqlDatabase mainDbConnection;
