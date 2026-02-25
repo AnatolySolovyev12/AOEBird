@@ -15,8 +15,6 @@ public:
 	GeneralClass(QObject* parent);
 	~GeneralClass();
 
-	void test(QStringList tempString);
-
 private:
 	ParamsClass* paramsClass = nullptr;
 	DataBaseClass* dataBaseClass = nullptr;

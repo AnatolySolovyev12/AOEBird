@@ -8,6 +8,8 @@ GeneralClass::GeneralClass(QObject *parent)
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForConnectToMainDb, dataBaseClass, &DataBaseClass::connectionToMainDb);
 }
 
+
+
 GeneralClass::~GeneralClass()
 {
 	delete dataBaseClass;
@@ -15,10 +17,5 @@ GeneralClass::~GeneralClass()
 
 	delete paramsClass;
 	paramsClass = nullptr;
-}
-
-void GeneralClass::test(QStringList tempString)
-{
-	qDebug() << tempString;
 }
 

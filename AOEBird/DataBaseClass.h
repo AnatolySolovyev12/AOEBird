@@ -7,6 +7,7 @@
 #include <qsqlerror>
 #include <QSqlQuery>
 #include <iostream>
+#include <QDate>
 
 class DataBaseClass  : public QObject
 {
@@ -17,7 +18,7 @@ public:
 	~DataBaseClass();
 
 	void connectionToMainDb(QStringList signalList);
-	void test();
+	void createMainTables();
 
 private:
 	QSqlDatabase mainDbConnection;
