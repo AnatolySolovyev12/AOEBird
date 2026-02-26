@@ -5,7 +5,10 @@ ParamsClass::ParamsClass(QObject* parent)
 {
 	if (createOrConnectParamsBd())
 		if (createTable())
+		{
 			writeFirstParamsDb();
+			writeParamsSmtp();
+		}
 
 	QTimer::singleShot(1000, [this]() {
 		sendStringListForMainDb();
@@ -63,7 +66,7 @@ bool ParamsClass::createOrConnectParamsBd()
 bool ParamsClass::createTable()
 {
 	QSqlQuery query(mainConnection);
-	QString queryString = ("CREATE TABLE DbGeneralParams (ip TEXT, port TEXT, name TEXT, login TEXT, password TEXT);");
+	QString queryString = ("CREATE TABLE DbGeneralParams (ip VARCHAR(15), port VARCHAR(8), name VARCHAR(30), login VARCHAR(30), password VARCHAR(30));");
 
 	if (!query.exec(queryString))
 	{
@@ -79,6 +82,23 @@ bool ParamsClass::createTable()
 	}
 
 	qDebug() << "CREATE DbGeneralParams";
+
+	queryString = ("CREATE TABLE smtpParams (mailSender VARCHAR(40), passForApp VARCHAR(30), host VARCHAR(30));");
+
+	if (!query.exec(queryString))
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::createTable() when try to create smtpParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::createTable() when try to create smtpParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT CREATE smtpParams";
+
+		return false;
+	}
+
+	qDebug() << "CREATE smtpParams";
 
 	return true;
 }
@@ -100,17 +120,17 @@ void ParamsClass::writeFirstParamsDb()
 	std::string name;
 	qDebug() << "Name DataBase:";
 	std::cin >> name;
-	validateNameLoginPassword(name);
+	name = validateText(name);
 
 	std::string login;
 	qDebug() << "Login for connection to DataBase:";
 	std::cin >> login;
-	validateNameLoginPassword(login);
+	login = validateText(login);
 
 	std::string password;
 	qDebug() << "Password for connection to DataBase:";
 	std::cin >> password;
-	validateNameLoginPassword(password);
+	password = validateText(password);
 
 	QSqlQuery query(mainConnection);
 
@@ -189,13 +209,13 @@ std::string ParamsClass::validatePort(std::string tempPort)
 
 
 
-std::string ParamsClass::validateNameLoginPassword(std::string tempString)
+std::string ParamsClass::validateText(std::string tempString)
 {
 	std::string tempStringForCheck = tempString;
 
 	do {
 		
-		if (tempStringForCheck.length() >= 25 || tempStringForCheck.length() <= 2)
+		if (tempStringForCheck.length() >= 35 || tempStringForCheck.length() <= 2)
 		{
 		}
 		else
@@ -237,4 +257,46 @@ void ParamsClass::sendStringListForMainDb()
 
 		emit signalFromParamsClassForConnectToMainDb(tempList);
 	}
+}
+
+
+
+void ParamsClass::writeParamsSmtp()
+{
+	QString queryString = ("CREATE TABLE smtpParams (mailSender VARCHAR(40), passForApp VARCHAR(30), host VARCHAR(30));");
+
+	std::string mailSender;
+	qDebug() << "Mail for send:";
+	std::cin >> mailSender;
+	mailSender = validateText(mailSender);
+
+	std::string passForApp;
+	qDebug() << "Pass for external app:";
+	std::cin >> passForApp;
+	passForApp = validateText(passForApp);
+
+	std::string host;
+	qDebug() << "Smtp host:";
+	std::cin >> host;
+	host = validateText(host);
+
+	QSqlQuery query(mainConnection);
+
+	query.prepare("INSERT INTO smtpParams (mailSender,  passForApp, host) VALUES (?, ?, ?)");
+	query.addBindValue(QString::fromStdString(mailSender));
+	query.addBindValue(QString::fromStdString(passForApp));
+	query.addBindValue(QString::fromStdString(host));
+
+	if (!query.exec())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::writeParamsSmtp() when try to insert value in smtpParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::writeParamsSmtp() when try to insert value in smtpParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT INSERT in smtpParams";
+	}
+	else
+		qDebug() << "Params for smtp was write";
 }

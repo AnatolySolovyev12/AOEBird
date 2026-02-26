@@ -15,12 +15,12 @@ GeneralClass::GeneralClass(QObject *parent)
 		dataBaseClass->insertInQueueAndHistory(tempList);
 
 		});
-
+	
 	QTimer::singleShot(4000, [this]() {
 
-		smtpClass = new SMTP("rassylka666.pokazaniyutek@mail.ru", "giH6VBc7ghukaiJh6h4M666", "smtp.mail.ru");
+		smtpClass = new SMTP("rassylka.pokazaniyutek@mail.ru", "giH6VBc7ghukaiJh6h4M", "smtp.mail.ru");
 
-		smtpClass->sendMail("rassylka666.pokazaniyutek@mail.ru", "666bakalavr12@mail.ru", "TEST", "");
+		smtpClass->sendMail("rassylka.pokazaniyutek@mail.ru", "bakalavr12@mail.ru", "TEST", "");
 
 
 		});

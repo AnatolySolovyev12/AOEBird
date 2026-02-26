@@ -24,8 +24,9 @@ public:
 	void writeFirstParamsDb();
 	std::string validateHost(std::string tempHost);
 	std::string validatePort(std::string tempPort);
-	std::string validateNameLoginPassword(std::string tempString);
+	std::string validateText(std::string tempString);
 	void sendStringListForMainDb();
+	void writeParamsSmtp();
 
 signals:
 	void errorLog(const QString&);
