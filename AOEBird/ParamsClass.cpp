@@ -69,6 +69,7 @@ bool ParamsClass::createOrConnectParamsBd()
 bool ParamsClass::createTable()
 {
 	QSqlQuery query(mainConnection);
+
 	QString queryString = ("CREATE TABLE DbGeneralParams (ip VARCHAR(15), port VARCHAR(8), name VARCHAR(30), login VARCHAR(30), password VARCHAR(30));");
 
 	if (!query.exec(queryString))
@@ -102,6 +103,23 @@ bool ParamsClass::createTable()
 	}
 
 	qDebug() << "CREATE smtpParams";
+
+	queryString = ("CREATE TABLE maxParams (url VARCHAR(300), chatIdAdmin VARCHAR(30));");
+
+	if (!query.exec(queryString))
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::createTable() when try to create maxParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::createTable() when try to create maxParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT CREATE maxParams";
+
+		return false;
+	}
+
+	qDebug() << "CREATE maxParams";
 
 	return true;
 }
@@ -337,8 +355,6 @@ void ParamsClass::sendStringListForSmtpClass()
 
 void ParamsClass::writeParamMax()
 {
-	QString queryString = ("CREATE TABLE maxParams (url VARCHAR(120), chatIdAdmin VARCHAR(30));");
-
 	std::string url;
 	qDebug() << "URL for MAX:";
 	std::cin >> url;
@@ -398,7 +414,7 @@ void ParamsClass::writeParamMax()
 void ParamsClass::sendStringListForMaxClass()
 {
 	QSqlQuery query(mainConnection);
-	QString queryString = ("SELECT url,  chatIdAdmin FROM maxParams");
+	QString queryString = ("SELECT url, chatIdAdmin FROM maxParams");
 	QStringList tempList;
 
 	if (!query.exec(queryString) || !query.next())

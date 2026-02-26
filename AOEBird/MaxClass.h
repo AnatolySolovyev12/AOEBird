@@ -19,7 +19,7 @@ class MaxClass : public QObject
 	Q_OBJECT
 
 public:
-	MaxClass(QObject* parent = nullptr, QString chatIdFromSignal = "", QString urlStringFromSignal = "");
+	MaxClass(QObject* parent = nullptr, QString urlStringFromSignal = "", QString chatIdFromSignal = "");
 
 public slots:
 	void sendMessage(const QString message);

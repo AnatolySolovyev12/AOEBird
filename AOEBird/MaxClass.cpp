@@ -1,7 +1,7 @@
 #include "MaxClass.h"
 
-MaxClass::MaxClass(QObject* parent, QString chatIdFromSignal, QString urlStringFromSignal)
-	: QObject(parent), manager(new QNetworkAccessManager), chatId(chatIdFromSignal), urlString(urlStringFromSignal)
+MaxClass::MaxClass(QObject* parent, QString urlStringFromSignal, QString chatIdFromSignal)
+	: QObject(parent), manager(new QNetworkAccessManager), urlString(urlStringFromSignal), chatId(chatIdFromSignal)
 {
 }
 
