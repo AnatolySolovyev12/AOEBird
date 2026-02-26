@@ -27,10 +27,14 @@ public:
 	std::string validateText(std::string tempString);
 	void sendStringListForMainDb();
 	void writeParamsSmtp();
+	void sendStringListForSmtpClass();
+
 
 signals:
 	void errorLog(const QString&);
 	void signalFromParamsClassForConnectToMainDb(QStringList tempListSending);
+	void signalFromParamsClassForSmtpWithParams(QStringList tempListSending);
+
 
 private:
 	QSqlDatabase mainConnection;

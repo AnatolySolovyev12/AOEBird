@@ -12,6 +12,7 @@ ParamsClass::ParamsClass(QObject* parent)
 
 	QTimer::singleShot(1000, [this]() {
 		sendStringListForMainDb();
+		sendStringListForSmtpClass();
 		});
 }
 
@@ -299,4 +300,33 @@ void ParamsClass::writeParamsSmtp()
 	}
 	else
 		qDebug() << "Params for smtp was write";
+}
+
+
+
+void ParamsClass::sendStringListForSmtpClass()
+{
+	QSqlQuery query(mainConnection);
+	QString queryString = ("SELECT mailSender,  passForApp, host FROM smtpParams");
+	QStringList tempList;
+
+	if (!query.exec(queryString) || !query.next())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::sendStringListForSmtpClass() when try to read from smtpParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::sendStringListForSmtpClass() when try to read from smtpParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT READ from smtpParams table";
+	}
+	else
+	{
+		for (int count = 0; count < 3; count++)
+		{
+			tempList << query.value(count).toString();
+		}
+
+		emit signalFromParamsClassForSmtpWithParams(tempList);
+	}
 }
