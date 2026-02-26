@@ -28,12 +28,17 @@ public:
 	void sendStringListForMainDb();
 	void writeParamsSmtp();
 	void sendStringListForSmtpClass();
+	void writeParamMax();
+	void sendStringListForMaxClass();
+
 
 
 signals:
 	void errorLog(const QString&);
 	void signalFromParamsClassForConnectToMainDb(QStringList tempListSending);
 	void signalFromParamsClassForSmtpWithParams(QStringList tempListSending);
+	void signalFromParamsClassForMaxWithParams(QStringList tempListSending);
+
 
 
 private:

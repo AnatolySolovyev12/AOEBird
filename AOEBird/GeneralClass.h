@@ -5,7 +5,7 @@
 #include <ParamsClass.h>
 #include <DataBaseClass.h>
 #include "SMTP.h"
-
+#include "MaxClass.h"
 
 class GeneralClass : public QObject
 {
@@ -19,5 +19,6 @@ private:
 	ParamsClass* paramsClass = nullptr;
 	DataBaseClass* dataBaseClass = nullptr;
 	SMTP* smtpClass = nullptr;
+	MaxClass* maxClass = nullptr;
 };
 

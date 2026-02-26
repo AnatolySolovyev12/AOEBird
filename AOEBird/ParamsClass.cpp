@@ -8,11 +8,13 @@ ParamsClass::ParamsClass(QObject* parent)
 		{
 			writeFirstParamsDb();
 			writeParamsSmtp();
+			writeParamMax();
 		}
 
 	QTimer::singleShot(1000, [this]() {
 		sendStringListForMainDb();
 		sendStringListForSmtpClass();
+		sendStringListForMaxClass();
 		});
 }
 
@@ -328,5 +330,94 @@ void ParamsClass::sendStringListForSmtpClass()
 		}
 
 		emit signalFromParamsClassForSmtpWithParams(tempList);
+	}
+}
+
+
+
+void ParamsClass::writeParamMax()
+{
+	QString queryString = ("CREATE TABLE maxParams (url VARCHAR(120), chatIdAdmin VARCHAR(30));");
+
+	std::string url;
+	qDebug() << "URL for MAX:";
+	std::cin >> url;
+
+	do {
+		if (url.length() >= 300 || url.length() <= 10)
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect length for your messege. Try again";
+
+		std::cin >> url;
+
+	} while (true);
+
+	std::string chatIdAdmin;
+	qDebug() << "ChatID for admin:";
+	std::cin >> chatIdAdmin;
+
+	do {
+		if (chatIdAdmin.length() >= 25 || chatIdAdmin.length() <= 5)
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect length for your messege. Try again";
+
+		std::cin >> chatIdAdmin;
+
+	} while (true);
+
+	QSqlQuery query(mainConnection);
+
+	query.prepare("INSERT INTO maxParams (url,  chatIdAdmin) VALUES (?, ?)");
+	query.addBindValue(QString::fromStdString(url));
+	query.addBindValue(QString::fromStdString(chatIdAdmin));
+
+	if (!query.exec())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::writeParamMax() when try to insert value in maxParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::writeParamMax() when try to insert value in maxParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT INSERT in maxParams";
+	}
+	else
+		qDebug() << "Params for MAX was write";
+}
+
+
+
+void ParamsClass::sendStringListForMaxClass()
+{
+	QSqlQuery query(mainConnection);
+	QString queryString = ("SELECT url,  chatIdAdmin FROM maxParams");
+	QStringList tempList;
+
+	if (!query.exec(queryString) || !query.next())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::sendStringListForMaxClass() when try to read from maxParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::sendStringListForMaxClass() when try to read from maxParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT READ from maxParams table";
+	}
+	else
+	{
+		for (int count = 0; count < 2; count++)
+		{
+			tempList << query.value(count).toString();
+		}
+
+		emit signalFromParamsClassForMaxWithParams(tempList);
 	}
 }
