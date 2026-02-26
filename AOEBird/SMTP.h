@@ -20,7 +20,7 @@ public:
         const QString& host, int port = 465, int timeout = 30000);
     ~SMTP();
 
-    void sendMail(const QString& from, const QString& to,
+    void sendMail(const QString& to,
         const QString& subject, QString files);
 
 

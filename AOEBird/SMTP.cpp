@@ -16,6 +16,7 @@ SMTP::SMTP(const QString& user, const QString& pass, const QString& host, int po
     connect(socket, SIGNAL(disconnected()), this, SLOT(disconnectedInfo()));
 
     this->user = user;
+    this->from = this->user;
     this->pass = pass;
     this->host = host;
     this->port = port;
@@ -24,7 +25,7 @@ SMTP::SMTP(const QString& user, const QString& pass, const QString& host, int po
 
 
 
-void SMTP::sendMail(const QString& from, const QString& to, const QString& subject, QString files)
+void SMTP::sendMail(const QString& to, const QString& subject, QString files)
 {
     message = "To: " + to + "\n"; // наполняем сообщение
     message.append("From: " + from + "\n");

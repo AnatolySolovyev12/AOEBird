@@ -20,7 +20,7 @@ GeneralClass::GeneralClass(QObject *parent)
 
 		smtpClass = new SMTP("rassylka.pokazaniyutek@mail.ru", "giH6VBc7ghukaiJh6h4M", "smtp.mail.ru");
 
-		smtpClass->sendMail("rassylka.pokazaniyutek@mail.ru", "bakalavr12@mail.ru", "TEST", "");
+		smtpClass->sendMail("bakalavr12@mail.ru", "TEST", "");
 
 
 		});
