@@ -9,12 +9,14 @@ ParamsClass::ParamsClass(QObject* parent)
 			writeFirstParamsDb();
 			writeParamsSmtp();
 			writeParamMax();
+			writeParamTg();
 		}
 
 	QTimer::singleShot(1000, [this]() {
 		sendStringListForMainDb();
 		sendStringListForSmtpClass();
 		sendStringListForMaxClass();
+		sendStringListForTelegramClass();
 		});
 }
 
@@ -120,6 +122,23 @@ bool ParamsClass::createTable()
 	}
 
 	qDebug() << "CREATE maxParams";
+
+	queryString = ("CREATE TABLE tgParams (token VARCHAR(100), chatIdAdmin VARCHAR(30));");
+
+	if (!query.exec(queryString))
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::createTable() when try to create tgParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::createTable() when try to create tgParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT CREATE tgParams";
+
+		return false;
+	}
+
+	qDebug() << "CREATE tgParams";
 
 	return true;
 }
@@ -435,5 +454,92 @@ void ParamsClass::sendStringListForMaxClass()
 		}
 
 		emit signalFromParamsClassForMaxWithParams(tempList);
+	}
+}
+
+
+
+void ParamsClass::writeParamTg()
+{
+	std::string token;
+	qDebug() << "Token for Telegram:";
+	std::cin >> token;
+
+	do {
+		if (token.length() >= 100 || token.length() <= 10)
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect length for your messege. Try again";
+
+		std::cin >> token;
+
+	} while (true);
+
+	std::string chatIdAdmin;
+	qDebug() << "ChatID for admin:";
+	std::cin >> chatIdAdmin;
+
+	do {
+		if (chatIdAdmin.length() >= 25 || chatIdAdmin.length() <= 5)
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect length for your messege. Try again";
+
+		std::cin >> chatIdAdmin;
+
+	} while (true);
+
+	QSqlQuery query(mainConnection);
+
+	query.prepare("INSERT INTO tgParams (token,  chatIdAdmin) VALUES (?, ?)");
+	query.addBindValue(QString::fromStdString(token));
+	query.addBindValue(QString::fromStdString(chatIdAdmin));
+
+	if (!query.exec())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::writeParamTg() when try to insert value in tgParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::writeParamTg() when try to insert value in tgParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT INSERT in tgParams";
+	}
+	else
+		qDebug() << "Params for Telegram was write";
+}
+
+
+
+void ParamsClass::sendStringListForTelegramClass()
+{
+	QSqlQuery query(mainConnection);
+	QString queryString = ("SELECT token, chatIdAdmin FROM tgParams");
+	QStringList tempList;
+
+	if (!query.exec(queryString) || !query.next())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::sendStringListForTelegramClass() when try to read from tgParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::sendStringListForTelegramClass() when try to read from tgParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT READ from tgParams table";
+	}
+	else
+	{
+		for (int count = 0; count < 2; count++)
+		{
+			tempList << query.value(count).toString();
+		}
+
+		emit signalFromParamsClassForTelegramWithParams(tempList);
 	}
 }

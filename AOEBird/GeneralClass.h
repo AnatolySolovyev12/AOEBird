@@ -6,6 +6,7 @@
 #include <DataBaseClass.h>
 #include "SMTP.h"
 #include "MaxClass.h"
+#include "TelegramJacket.h"
 
 class GeneralClass : public QObject
 {
@@ -20,5 +21,6 @@ private:
 	DataBaseClass* dataBaseClass = nullptr;
 	SMTP* smtpClass = nullptr;
 	MaxClass* maxClass = nullptr;
+	TelegramJacket* tgClass = nullptr;
 };
 

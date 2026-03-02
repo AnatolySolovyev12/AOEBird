@@ -4,7 +4,7 @@ SMTP::SMTP(const QString& user, const QString& pass, const QString& host, int po
 {
     //Проверяем версию SSL
 
-    qDebug() << QSslSocket::supportsSsl() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionString() << QSslSocket::sslLibraryVersionNumber() << "\n";
+    qDebug() << "SMPT Class: " << "support SSL - " << QSslSocket::supportsSsl() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionString() << QSslSocket::sslLibraryVersionNumber() << "\n";
 
     socket = new QSslSocket(this);
 

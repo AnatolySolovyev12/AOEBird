@@ -41,6 +41,9 @@
     <ClCompile Include="MaxClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TelegramJacket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GeneralClass.h">
@@ -56,6 +59,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="MaxClass.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TelegramJacket.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

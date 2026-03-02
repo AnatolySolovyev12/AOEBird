@@ -30,6 +30,8 @@ public:
 	void sendStringListForSmtpClass();
 	void writeParamMax();
 	void sendStringListForMaxClass();
+	void writeParamTg();
+	void sendStringListForTelegramClass();
 
 
 
@@ -38,6 +40,8 @@ signals:
 	void signalFromParamsClassForConnectToMainDb(QStringList tempListSending);
 	void signalFromParamsClassForSmtpWithParams(QStringList tempListSending);
 	void signalFromParamsClassForMaxWithParams(QStringList tempListSending);
+	void signalFromParamsClassForTelegramWithParams(QStringList tempListSending);
+
 
 
 

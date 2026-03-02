@@ -15,6 +15,12 @@ GeneralClass::GeneralClass(QObject *parent)
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForMaxWithParams, [this](QStringList tempList) {
 		maxClass = new MaxClass(nullptr,  tempList[0], tempList[1]);
 		});
+
+	connect(paramsClass, &ParamsClass::signalFromParamsClassForTelegramWithParams, [this](QStringList tempList) {
+		tgClass = new TelegramJacket(nullptr, tempList[0], tempList[1]);
+		});
+
+
 	/*
 	QTimer::singleShot(2000, [this]() {
 		dataBaseClass->insertInUsers("bakalavr12@mail.ru", "art54011212"); 
@@ -32,13 +38,19 @@ GeneralClass::GeneralClass(QObject *parent)
 		});
 		*/
 
-		
+	// Надо будет вернуть в методы отправки сообщений параметр с chatId/Телефон
+
+	/*	
 	QTimer::singleShot(4000, [this]() {
 		maxClass->sendMessage("TEST");
 		});
-		
+		*/
 
-
+	/*
+	QTimer::singleShot(4000, [this]() {
+		tgClass->sendMessage("TEST");
+		});
+		*/
 }
 
 
