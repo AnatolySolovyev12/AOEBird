@@ -44,6 +44,9 @@
     <ClCompile Include="TelegramJacket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CheckClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GeneralClass.h">
@@ -62,6 +65,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="TelegramJacket.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CheckClass.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

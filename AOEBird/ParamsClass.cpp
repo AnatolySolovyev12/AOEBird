@@ -17,6 +17,7 @@ ParamsClass::ParamsClass(QObject* parent)
 		sendStringListForSmtpClass();
 		sendStringListForMaxClass();
 		sendStringListForTelegramClass();
+		signalFromParamsClassForStartCheckClass();
 		});
 }
 

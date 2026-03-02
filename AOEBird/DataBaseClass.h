@@ -8,6 +8,7 @@
 #include <QSqlQuery>
 #include <iostream>
 #include <QDate>
+#include <qsqlerror>
 
 class DataBaseClass  : public QObject
 {
@@ -21,6 +22,10 @@ public:
 	void createMainTables();
 	void insertInUsers(QString tempMail, QString tempPass);
 	void insertInQueueAndHistory(QStringList tempList);
+	void getQueueValue();
+
+signals:
+	void sendSTringListFromQueue(QStringList temp);
 
 
 private:

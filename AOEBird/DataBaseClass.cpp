@@ -1,19 +1,20 @@
 #include "DataBaseClass.h"
 
-DataBaseClass::DataBaseClass(QObject *parent)
+DataBaseClass::DataBaseClass(QObject* parent)
 	: QObject(parent)
-{}
+{
+}
 
 
 
 DataBaseClass::~DataBaseClass()
 {
-	if (mainDbConnection.isOpen()) 
+	if (mainDbConnection.isOpen())
 	{
 		mainDbConnection.close();
 	}
 
-	if (QSqlDatabase::contains("postgres_connection")) 
+	if (QSqlDatabase::contains("postgres_connection"))
 	{
 		QSqlDatabase::removeDatabase("postgres_connection");
 	}
@@ -37,7 +38,7 @@ void DataBaseClass::connectionToMainDb(QStringList signalList)
 	else
 	{
 		qDebug() << "OPEN " << signalList[2];
-		
+
 		createMainTables();
 	}
 }
@@ -122,5 +123,36 @@ void DataBaseClass::insertInQueueAndHistory(QStringList tempList)
 		}
 		else
 			qDebug() << "VALUE was add in " << (countTable == 1 ? "queue_notice" : "history");
+	}
+}
+
+
+
+void DataBaseClass::getQueueValue()
+{
+	QList<QStringList>tempQListWIthStringList;
+	QSqlQuery query(mainDbConnection);
+	QString queryString = QString("SELECT * FROM queue_notice ORDER BY date, time");
+
+	if (!query.exec(queryString) || !query.next())
+	{
+
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in DataBaseClass::getQueueValue() when try to get values from queue_notice. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
+		}
+		else
+			qDebug() << "NOT GET from queue_notice";
+	}
+	else
+	{
+		QStringList tempStringList;
+
+		for (int counter = 0; counter < 11; counter++)
+		{
+			tempStringList << query.value(counter).toString();
+		}
+
+		emit sendSTringListFromQueue(tempStringList);
 	}
 }

@@ -41,6 +41,7 @@ signals:
 	void signalFromParamsClassForSmtpWithParams(QStringList tempListSending);
 	void signalFromParamsClassForMaxWithParams(QStringList tempListSending);
 	void signalFromParamsClassForTelegramWithParams(QStringList tempListSending);
+	void signalFromParamsClassForStartCheckClass();
 
 
 

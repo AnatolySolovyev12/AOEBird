@@ -20,6 +20,11 @@ GeneralClass::GeneralClass(QObject *parent)
 		tgClass = new TelegramJacket(nullptr, tempList[0], tempList[1]);
 		});
 
+	connect(paramsClass, &ParamsClass::signalFromParamsClassForStartCheckClass, [this]() {
+		checkClass = new CheckClass(nullptr);
+		connect(checkClass, &CheckClass::checkDbForEvent, dataBaseClass, &DataBaseClass::getQueueValue);
+		connect(dataBaseClass, &DataBaseClass::sendSTringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);
+		});
 
 	/*
 	QTimer::singleShot(2000, [this]() {
@@ -39,9 +44,8 @@ GeneralClass::GeneralClass(QObject *parent)
 		*/
 
 	// Надо будет вернуть в методы отправки сообщений параметр с chatId/Телефон
-
-	/*	
-	QTimer::singleShot(4000, [this]() {
+	/*
+		QTimer::singleShot(4000, [this]() {
 		maxClass->sendMessage("TEST");
 		});
 		*/
@@ -50,6 +54,7 @@ GeneralClass::GeneralClass(QObject *parent)
 	QTimer::singleShot(4000, [this]() {
 		tgClass->sendMessage("TEST");
 		});
+
 		*/
 }
 

@@ -26,7 +26,7 @@ void TelegramJacket::sendMessage(const QString message)
 	// Отправка запроса
 	manager->post(request, query.toString(QUrl::FullyEncoded).toUtf8());
 
-	/*
+	
 	// Обработчик ответа (если необходимо). Пригодится.
 	QObject::connect(manager, &QNetworkAccessManager::finished, [](QNetworkReply* reply) {
 
@@ -41,6 +41,4 @@ void TelegramJacket::sendMessage(const QString message)
 		}
 		reply->deleteLater();
 		});
-
-		*/
 }
