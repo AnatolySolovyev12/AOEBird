@@ -22,10 +22,16 @@ public:
 	MaxClass(QObject* parent = nullptr, QString urlStringFromSignal = "", QString chatIdFromSignal = "");
 
 public slots:
-	void sendMessage(const QString message);
+	void sendMessage(const QString phoneNumber, const QString message);
+	void checkNumber(const QString phoneNumber, const QString message);
+
+signals:
+	void sendAfterGetChatId(const QString chatIdFromSignal, const QString messege);
 
 private:
 	QNetworkAccessManager* manager = nullptr;
-	QString chatId = "";
+	QString chatIdAdmin = "";
 	QString urlString = "";
+	QString urlForCheck = "";
+	QString chatIdFromCheck = "";
 };

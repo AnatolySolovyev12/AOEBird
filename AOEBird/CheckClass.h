@@ -17,6 +17,12 @@ public:
 
 signals:
 	void checkDbForEvent();
+	void sendMax(QString phoneNumber, QString messege);
+	void sendTelegram(QString messege);
+	void sendMail(QString eMail, QString messege, QString files);
+	void sendSMS(QString phoneNumber, QString messege);
+
+
 
 private:
 	QTimer* checkTimer = nullptr;

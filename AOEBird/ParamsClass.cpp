@@ -393,7 +393,7 @@ void ParamsClass::writeParamMax()
 	} while (true);
 
 	std::string chatIdAdmin;
-	qDebug() << "ChatID for admin:";
+	qDebug() << "Phone number for admin:";
 	std::cin >> chatIdAdmin;
 
 	do {

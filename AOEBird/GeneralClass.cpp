@@ -24,6 +24,13 @@ GeneralClass::GeneralClass(QObject *parent)
 		checkClass = new CheckClass(nullptr);
 		connect(checkClass, &CheckClass::checkDbForEvent, dataBaseClass, &DataBaseClass::getQueueValue);
 		connect(dataBaseClass, &DataBaseClass::sendSTringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);
+
+		connect(checkClass, &CheckClass::sendMax, maxClass, &MaxClass::checkNumber);
+		connect(checkClass, &CheckClass::sendTelegram, tgClass, &TelegramJacket::sendMessage);
+		connect(checkClass, &CheckClass::sendMail, smtpClass, &SMTP::sendMail);
+		connect(checkClass, &CheckClass::sendSMS, []() { qDebug() << "TEST SMS"; });
+
+
 		});
 
 	/*
@@ -46,16 +53,25 @@ GeneralClass::GeneralClass(QObject *parent)
 	// Надо будет вернуть в методы отправки сообщений параметр с chatId/Телефон
 	/*
 		QTimer::singleShot(4000, [this]() {
-		maxClass->sendMessage("TEST");
+		maxClass->sendMessage("admin", "TEST");
 		});
 		*/
+
+
+	/*
+		QTimer::singleShot(4000, [this]() {
+			maxClass->checkNumber("admin", "TEST WITH ADMIN");
+			});
+		*/
+
+
 
 	/*
 	QTimer::singleShot(4000, [this]() {
 		tgClass->sendMessage("TEST");
 		});
-
 		*/
+		
 }
 
 
