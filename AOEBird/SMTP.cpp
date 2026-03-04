@@ -16,7 +16,7 @@ SMTP::SMTP(const QString& user, const QString& pass, const QString& host, int po
     connect(socket, SIGNAL(disconnected()), this, SLOT(disconnectedInfo()));
 
     this->user = user;
-    this->from = this->user;
+    this->from = user;
     this->pass = pass;
     this->host = host;
     this->port = port;
@@ -38,6 +38,8 @@ void SMTP::sendMail(const QString& to, const QString& subject, QString files)
     message.append("--frontier\n");
     //message.append( "Content-Type: text/html\n\n" );  //Uncomment this for HTML formating, coment the line below
     message.append("Content-Type: text/plain\n\n"); //определяем формат тела письма. По сути это всегда "text/plain"
+
+    message.append("TEST BODY TO MESSEGE"); //////////////////////////////////////////////
 
     message.append("\n\n");
 
@@ -100,14 +102,14 @@ void SMTP::stateChangedInfo(QAbstractSocket::SocketState socketState) // Это сиг
 
 void SMTP::errorReceivedInfo(QAbstractSocket::SocketError socketError) // Сигнал который выдаётся после возгникновения ошибки. Идёт в комплекте с библиотекой. socketError описывает тип произошедшей ошибки.
 {
-    qDebug() << "\nerror " << socketError;
+    qDebug() << "\nError from SMTP::errorReceivedInfo(): " << socketError;
 }
 
 
 void SMTP::disconnectedInfo()
 {
     qDebug() << "\ndisconneted";
-    qDebug() << "\nerror " << socket->errorString();
+    qDebug() << "\nError from SMTP::disconnectedInfo(): " << socket->errorString();
 }
 
 
@@ -170,7 +172,7 @@ void SMTP::readyReadFromSocket()
             if (!socket->waitForEncrypted(timeout))
             {
                 qDebug() << "IF NOT startClientEncryption()";
-                qDebug() << socket->errorString();
+                qDebug() << "Error from SMTP::readyReadFromSocket(): " << socket->errorString();
                 state = Close;
             }
         }
@@ -275,7 +277,7 @@ void SMTP::readyReadFromSocket()
 
     else if (state == Close)
     {
-        deleteLater(); // отложенное удаление объекта после возврата в цикл обработчика событий.
+       // deleteLater(); // отложенное удаление объекта после возврата в цикл обработчика событий.
         return;
     }
 
@@ -283,7 +285,7 @@ void SMTP::readyReadFromSocket()
     else
     {
         // something broke.
-        QMessageBox::warning(0, tr("Qt Simple SMTP client"), tr("Unexpected reply from SMTP server:\n\n") + response);
+        //QMessageBox::warning(0, tr("Qt Simple SMTP client"), tr("Unexpected reply from SMTP server:\n\n") + response);
         state = Close;
         emit status(tr("Failed to send message"));
     }
