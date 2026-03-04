@@ -21,6 +21,7 @@ signals:
 	void sendTelegram(QString messege);
 	void sendMail(QString eMail, QString messege, QString files);
 	void sendSMS(QString phoneNumber, QString messege);
+	void deleteInDbSignal(QString id, QString request, QString position);
 
 
 

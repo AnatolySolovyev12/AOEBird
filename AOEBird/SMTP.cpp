@@ -96,26 +96,26 @@ SMTP::~SMTP()
 
 void SMTP::stateChangedInfo(QAbstractSocket::SocketState socketState) // Это сигнал который генерируетсмя всякий раз когда меняется состояние сокета. Идёт в комплекте с библиотекой. socketState это новое состояние. 
 {
-    qDebug() << "\nstateChanged " << socketState;
+   // qDebug() << "\nstateChanged " << socketState;
 }
 
 
 void SMTP::errorReceivedInfo(QAbstractSocket::SocketError socketError) // Сигнал который выдаётся после возгникновения ошибки. Идёт в комплекте с библиотекой. socketError описывает тип произошедшей ошибки.
 {
-    qDebug() << "\nError from SMTP::errorReceivedInfo(): " << socketError;
+  //  qDebug() << "\nError from SMTP::errorReceivedInfo(): " << socketError;
 }
 
 
 void SMTP::disconnectedInfo()
 {
-    qDebug() << "\ndisconneted";
-    qDebug() << "\nError from SMTP::disconnectedInfo(): " << socket->errorString();
+  //  qDebug() << "\ndisconneted";
+  //  qDebug() << "\nError from SMTP::disconnectedInfo(): " << socket->errorString();
 }
 
 
 void SMTP::connectedInfo()
 {
-    qDebug() << "\nConnected";
+    qDebug() << "\nConnected to SMTP server";
 }
 
 
@@ -125,7 +125,7 @@ void SMTP::readyReadFromSocket()
     userByte = user.toUtf8();
     passByte = pass.toUtf8();
 
-    qDebug() << "\nreadyReadFromSocket()\n";
+   // qDebug() << "\nreadyReadFromSocket()\n";
 
     // SMTP is line-oriented
 
@@ -140,7 +140,7 @@ void SMTP::readyReadFromSocket()
         responseLine = socket->readLine(); // к данным в конце всегда добавляется завершающий символ "\0"
         response += responseLine;
 
-        qDebug() << count << " - " << responseLine;
+      //  qDebug() << count << " - " << responseLine;
 
         count++;
 
@@ -187,7 +187,7 @@ void SMTP::readyReadFromSocket()
     else if (state == Auth && responseLine == "250")
     {
         // Trying AUTH
-        qDebug() << "\nAuth";
+      //  qDebug() << "\nAuth";
         *t << "AUTH LOGIN" << "\r\n"; // посылаем команду на авторизацию
         t->flush();
         state = User;
@@ -198,7 +198,7 @@ void SMTP::readyReadFromSocket()
     else if (state == User && responseLine == "334")
     {
         //Trying User        
-        qDebug() << "\nUsername";
+      //  qDebug() << "\nUsername";
         //GMAIL is using XOAUTH2 protocol, which basically means that password and username has to be sent in base64 coding
         //https://developers.google.com/gmail/xoauth2_protocol
         *t << QByteArray().append(userByte).toBase64() << "\r\n";
@@ -212,7 +212,7 @@ void SMTP::readyReadFromSocket()
     else if (state == Pass && responseLine == "334")
     {
         //Trying pass
-        qDebug() << "\nPass";
+     //   qDebug() << "\nPass";
         *t << QByteArray().append(passByte).toBase64() << "\r\n";
         t->flush();
 
@@ -226,7 +226,7 @@ void SMTP::readyReadFromSocket()
         // HELO response was okay (well, it has to be)
 
         //Apperantly for Google it is mandatory to have MAIL FROM and RCPT email formated the following way -> <email@gmail.com>
-        qDebug() << "\nMAIL FROM:<" << from << ">";
+       // qDebug() << "\nMAIL FROM:<" << from << ">";
         *t << "MAIL FROM:<" << from << ">\r\n";
         t->flush();
         state = Rcpt;

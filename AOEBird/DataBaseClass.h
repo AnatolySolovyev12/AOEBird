@@ -23,6 +23,7 @@ public:
 	void insertInUsers(QString tempMail, QString tempPass);
 	void insertInQueueAndHistory(QStringList tempList);
 	void getQueueValue();
+	void deleteFromDb(QString Id, QString request, QString pos);
 
 signals:
 	void sendSTringListFromQueue(QStringList temp);

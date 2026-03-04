@@ -29,7 +29,7 @@ GeneralClass::GeneralClass(QObject *parent)
 		connect(checkClass, &CheckClass::sendTelegram, tgClass, &TelegramJacket::sendMessage);
 		connect(checkClass, &CheckClass::sendMail, smtpClass, &SMTP::sendMail);
 		connect(checkClass, &CheckClass::sendSMS, []() { qDebug() << "TEST SMS"; });
-
+		connect(checkClass, &CheckClass::deleteInDbSignal, dataBaseClass, &DataBaseClass::deleteFromDb);
 
 		});
 

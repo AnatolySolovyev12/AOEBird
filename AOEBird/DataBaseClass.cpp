@@ -136,7 +136,6 @@ void DataBaseClass::getQueueValue()
 
 	if (!query.exec(queryString) || !query.next())
 	{
-
 		if (query.lastError().isValid())
 		{
 			qDebug() << "Error in DataBaseClass::getQueueValue() when try to get values from queue_notice. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
@@ -154,5 +153,32 @@ void DataBaseClass::getQueueValue()
 		}
 
 		emit sendSTringListFromQueue(tempStringList);
+	}
+}
+
+
+
+void DataBaseClass::deleteFromDb(QString Id, QString request, QString pos)
+{
+	QSqlQuery query(mainDbConnection);
+	QString queryString = QString("DELETE FROM queue_notice WHERE");
+
+	query.prepare("DELETE FROM queue_notice WHERE id_user = ? AND id_request = ? AND id_position = ?");
+	query.addBindValue(Id);
+	query.addBindValue(request);
+	query.addBindValue(pos);
+
+	if (!query.exec())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in DataBaseClass::deleteFromDb() when try delete value in queue_notice. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
+		}
+		else
+			qDebug() << "NOT DELETE in queue_notice";
+	}
+	else
+	{
+		qDebug() << "VALUE WAS DELETE in queue_notice";
 	}
 }

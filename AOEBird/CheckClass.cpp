@@ -13,14 +13,14 @@ CheckClass::~CheckClass()
 
 void CheckClass::checkValuesFromDb(QStringList temp)
 {
-	qDebug() << temp;
-	qDebug() << temp[9] << " " << temp[10] << "  VS  " << QDate::currentDate().toString("yyyy.MM.dd") << " " << QTime::currentTime().toString();
+	qDebug() << "Check...";
 
-	if (QDate::fromString(temp[9]) <= QDate::currentDate())
+	if (QDate::currentDate() >= QDate::fromString(temp[9], "yyyy-MM-dd"))
 	{
-		if (QTime::fromString(temp[10]) <= QTime::currentTime() || QDate::fromString(temp[9]) < QDate::currentDate())
+		if (QTime::fromString(temp[10]) <= QTime::currentTime() || QDate::currentDate() > QDate::fromString(temp[9], "yyyy-MM-dd"))
 		{
-			/*
+			qDebug() << "Event is Done: " << QDate::currentDate() << " Current: " << QDate::fromString(temp[9], "yyyy-MM-dd") << "   " << QTime::fromString(temp[10]) << " Current: " << QTime::currentTime();
+
 			if (temp[5] == "true") // MAX
 			{
 				if (temp[3][0] == '8')
@@ -35,27 +35,27 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 				}
 
 				emit sendMax(temp[3], "TEST AUTO FOR MAX");
-				qDebug() << "MAX TEST";
+				qDebug() << "MAX TEST MESSEGE";
 			}
 
 			if (temp[6] == "true") // Telegram
 			{
 				emit sendTelegram("TEST AUTO FOR TELEGRAM"); // надо рихтовать для отправки с chatId
-				qDebug() << "TELEGRAM TEST";
+				qDebug() << "TELEGRAM TEST MESSEGE";
 
 			}
-			*/
+			
 			if (temp[7] == "true") // Mail
 			{
 				emit sendMail(temp[4], "TEST AUTO FOR MAIL", "");
-
-				//вопрос по частоте отправки сообщений
 			}
 
 			if (temp[8] == "true") // SMS
 			{
 				emit sendSMS("89825313114", "TEST SMS");
 			}
+
+			emit deleteInDbSignal(temp[0], temp[1], temp[2]);
 		}
 	}
 }
