@@ -19,6 +19,7 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 	{
 		if (QTime::fromString(temp[10]) <= QTime::currentTime() || QDate::currentDate() > QDate::fromString(temp[9], "yyyy-MM-dd"))
 		{
+			qDebug() << temp;
 			qDebug() << "Event is Done: " << QDate::currentDate() << " Current: " << QDate::fromString(temp[9], "yyyy-MM-dd") << "   " << QTime::fromString(temp[10]) << " Current: " << QTime::currentTime();
 
 			if (temp[5] == "true") // MAX
