@@ -49,14 +49,14 @@ void DataBaseClass::createMainTables()
 {
 	QSqlQuery query(mainDbConnection);
 
-	if (!query.exec("CREATE TABLE IF NOT EXISTS queue_notice (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME);"))
+	if (!query.exec("CREATE TABLE IF NOT EXISTS queue_notice (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME, date_create DATE, time_create TIME);"))
 	{
 		qDebug() << "Error in DataBaseClass::connectionToMainDb() when try to create queue_notice table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 	}
 	else
 		qDebug() << "TABLE queue_notice WAS ADD OR SKIP";
 
-	if (!query.exec("CREATE TABLE IF NOT EXISTS history (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME);"))
+	if (!query.exec("CREATE TABLE IF NOT EXISTS history (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME, date_create DATE, time_create TIME);"))
 	{
 		qDebug() << "Error in DataBaseClass::connectionToMainDb() when try to create history table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 	}
@@ -88,7 +88,7 @@ void DataBaseClass::insertInUsers(QString tempMail, QString tempPass)
 		qDebug() << "Error in DataBaseClass::insertInUsers() when try to insert value. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 	}
 	else
-		qDebug() << "VALUE was add in users";
+		qDebug() << "USER was add in users or skip\n";
 }
 
 
@@ -96,13 +96,13 @@ void DataBaseClass::insertInUsers(QString tempMail, QString tempPass)
 void DataBaseClass::insertInQueueAndHistory(QStringList tempList)
 {
 	QSqlQuery query(mainDbConnection);
-	QString date = QDate::currentDate().toString();
-	QString time = QTime::currentTime().toString();
+	QString dateCreate = QDate::currentDate().toString("yyyy-MM-dd");
+	QString timeCreate = QTime::currentTime().toString();
 
 	for (int countTable = 1; countTable <= 2; countTable++)
 	{
 		// ¬ Postgre подготовленный запрос на вставку в таблицу почему то иначе интрепретируетс€ и будет гарантированна€ ошибка. ƒелаем дл€ таблицы втсавку через .arg() если это требуетс€.
-		query.prepare(QString("INSERT INTO %1 (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, mail_send, sms_send, date, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
+		query.prepare(QString("INSERT INTO %1 (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, mail_send, sms_send, date, time, date_create, time_create) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
 			.arg(countTable == 1 ? "queue_notice" : "history"));
 
 		query.addBindValue(tempList[0]);
@@ -114,15 +114,17 @@ void DataBaseClass::insertInQueueAndHistory(QStringList tempList)
 		query.addBindValue(tempList[6]);
 		query.addBindValue(tempList[7]);
 		query.addBindValue(tempList[8]);
-		query.addBindValue(date);
-		query.addBindValue(time);
-
+		query.addBindValue(tempList[9]);
+		query.addBindValue(tempList[10]);
+		query.addBindValue(dateCreate);
+		query.addBindValue(timeCreate);
+		
 		if (!query.exec())
 		{
 			qDebug() << "Error in DataBaseClass::insertInQueueAndHistory() when try to insert value in " << (countTable == 1 ? "queue_notice" : "history") << ". Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 		}
 		else
-			qDebug() << "VALUE was add in " << (countTable == 1 ? "queue_notice" : "history");
+			qDebug() << "VALUE was add in " << (countTable == 1 ? "queue_notice\n" : "history\n");
 	}
 }
 
@@ -141,7 +143,7 @@ void DataBaseClass::getQueueValue()
 			qDebug() << "Error in DataBaseClass::getQueueValue() when try to get values from queue_notice. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
 		}
 		else
-			qDebug() << "NOT GET from queue_notice";
+			qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET from queue_notice";
 	}
 	else
 	{
@@ -152,7 +154,7 @@ void DataBaseClass::getQueueValue()
 			tempStringList << query.value(counter).toString();
 		}
 
-		emit sendSTringListFromQueue(tempStringList);
+		emit sendStringListFromQueue(tempStringList);
 	}
 }
 

@@ -34,6 +34,8 @@ private slots:
     void disconnectedInfo();
     void connectedInfo();
     void readyReadFromSocket();
+    void sslErrorsReceived(const QList<QSslError>& errors);
+
 
 
 private:

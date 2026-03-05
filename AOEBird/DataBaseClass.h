@@ -26,7 +26,7 @@ public:
 	void deleteFromDb(QString Id, QString request, QString pos);
 
 signals:
-	void sendSTringListFromQueue(QStringList temp);
+	void sendStringListFromQueue(QStringList temp);
 
 
 private:

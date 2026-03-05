@@ -11,9 +11,10 @@ SMTP::SMTP(const QString& user, const QString& pass, const QString& host, int po
     //сигналы для них используются бибилиотечные
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyReadFromSocket()));
     connect(socket, SIGNAL(connected()), this, SLOT(connectedInfo()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(errorReceivedInfo(QAbstractSocket::SocketError))); // параметры прописывать необязательно но можно.
     connect(socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(stateChangedInfo(QAbstractSocket::SocketState))); // параметры прописывать необязательно но можно.
     connect(socket, SIGNAL(disconnected()), this, SLOT(disconnectedInfo()));
+    connect(socket, &QSslSocket::errorOccurred, this, &SMTP::errorReceivedInfo);; // параметры прописывать необязательно но можно.
+    connect(socket, &QSslSocket::sslErrors, this, &SMTP::sslErrorsReceived);
 
     this->user = user;
     this->from = user;
@@ -102,7 +103,17 @@ void SMTP::stateChangedInfo(QAbstractSocket::SocketState socketState) // Это сиг
 
 void SMTP::errorReceivedInfo(QAbstractSocket::SocketError socketError) // Сигнал который выдаётся после возгникновения ошибки. Идёт в комплекте с библиотекой. socketError описывает тип произошедшей ошибки.
 {
-  //  qDebug() << "\nError from SMTP::errorReceivedInfo(): " << socketError;
+    if (socketError == QAbstractSocket::RemoteHostClosedError) 
+        return; // при нормальном закрытии игнорируем вылезающую ошибку 
+    
+    qDebug() << "\nError from SMTP::errorReceivedInfo(): " << socketError;
+}
+
+
+
+void SMTP::sslErrorsReceived(const QList<QSslError>& errors)
+{
+      qDebug() << "\nError from SMTP::errorReceivedInfo(): " << errors;
 }
 
 

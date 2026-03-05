@@ -23,7 +23,7 @@ GeneralClass::GeneralClass(QObject *parent)
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForStartCheckClass, [this]() {
 		checkClass = new CheckClass(nullptr);
 		connect(checkClass, &CheckClass::checkDbForEvent, dataBaseClass, &DataBaseClass::getQueueValue);
-		connect(dataBaseClass, &DataBaseClass::sendSTringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);
+		connect(dataBaseClass, &DataBaseClass::sendStringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);
 
 		connect(checkClass, &CheckClass::sendMax, maxClass, &MaxClass::checkNumber);
 		connect(checkClass, &CheckClass::sendTelegram, tgClass, &TelegramJacket::sendMessage);
@@ -33,15 +33,15 @@ GeneralClass::GeneralClass(QObject *parent)
 
 		});
 
-	/*
+	
 	QTimer::singleShot(2000, [this]() {
-		dataBaseClass->insertInUsers("bakalavr12@mail.ru", "art54011212"); 
+		//dataBaseClass->insertInUsers("bakalavr12@mail.ru", "art54011212"); 
 		 
 		QStringList tempList;
-		tempList << "1" << "1" << "1" << "89825313114" << "bakalavr12@mail.ru" << "TRUE" << "FALSE" << "TRUE" << "FALSE";
+		tempList << "1" << "1" << "1" << "89825313114" << "bakalavr12@mail.ru" << "TRUE" << "FALSE" << "TRUE" << "FALSE" << "2026-03-06" << "14:21:30";
 		dataBaseClass->insertInQueueAndHistory(tempList);
 		});
-	*/
+	
 
 
 	/*
