@@ -141,6 +141,23 @@ bool ParamsClass::createTable()
 
 	qDebug() << "CREATE tgParams";
 
+	queryString = ("CREATE TABLE smsParams (portName VARCHAR(20), speed VARCHAR(8)), dataBits VARCHAR(1), partity VARCHAR(1), stopBits VARCHAR(1);");
+
+	if (!query.exec(queryString))
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::createTable() when try to create smsParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::createTable() when try to create smsParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT CREATE smsParams";
+
+		return false;
+	}
+
+	qDebug() << "CREATE smsParams";
+
 	return true;
 }
 
@@ -544,3 +561,118 @@ void ParamsClass::sendStringListForTelegramClass()
 		emit signalFromParamsClassForTelegramWithParams(tempList);
 	}
 }
+
+
+
+void ParamsClass::writeParamSms()
+{
+	std::string comPort;
+	qDebug() << "COM port for sms (Example: COM1):";
+	std::cin >> comPort;
+
+	do {
+		if (comPort.length() >= 6 || comPort.length() <= 3)
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect length for your messege. Try again";
+
+		std::cin >> comPort;
+
+	} while (true);
+
+	std::string baudRate;
+	qDebug() << "Baud rate:";
+	std::cin >> baudRate;
+
+	do {
+		if (baudRate.length() >= 7 || baudRate.length() <= 2)
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect length for your messege. Try again";
+
+		std::cin >> baudRate;
+
+	} while (true);
+
+	std::string bitsInFrame;
+	qDebug() << "Bits is frame:";
+	std::cin >> bitsInFrame;
+
+	do {
+		if (bitsInFrame.length() >= 3 || bitsInFrame.length() <= 0)
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect length for your messege. Try again";
+
+		std::cin >> bitsInFrame;
+
+	} while (true);
+
+	std::string bitsInFrame;
+	qDebug() << "Bits is frame:";
+	std::cin >> bitsInFrame;
+
+	do {
+		if (bitsInFrame.length() >= 3 || bitsInFrame.length() <= 0)
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect length for your messege. Try again";
+
+		std::cin >> bitsInFrame;
+
+	} while (true);
+
+	std::string partity;
+	qDebug() << "Choose your partity: (1-NoParity (recommendary), 2-EvenParity, 3-OddParity, 4-SpaceParity, 5-MarkParity)";
+	std::cin >> partity;
+
+	do {
+		if (partity != "1" || partity != "2" || partity != "3" || partity != "4" || partity != "5")
+		{
+		}
+		else
+			break;
+
+		qDebug() << "Incorrect number of partity in your messege. Try again";
+
+		std::cin >> partity;
+
+	} while (true);
+
+	QSqlQuery query(mainConnection);
+
+	query.prepare("INSERT INTO smsParams (portName, speed, dataBits, partity, stopBits) VALUES (?, ?, ?, ?, ?)");
+	query.addBindValue(QString::fromStdString(token));
+	query.addBindValue(QString::fromStdString(chatIdAdmin));
+
+	if (!query.exec())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::writeParamTg() when try to insert value in tgParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::writeParamTg() when try to insert value in tgParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT INSERT in tgParams";
+	}
+	else
+		qDebug() << "Params for Telegram was write";
+}
+
+serial->setPortName("COM8"); // задаём имя последовательного порта
+serial->setBaudRate(9600, QSerialPort::AllDirections); // скорость обмена и тип направления
+serial->setDataBits(QSerialPort::DataBits(8)); // количество бит данных в кадре
+serial->setParity(QSerialPort::NoParity); // контроль четности
+serial->setStopBits(QSerialPort::StopBits(1)); // устанавливаем стоп биты

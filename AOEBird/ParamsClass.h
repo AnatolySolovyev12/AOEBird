@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QObject>
 #include <QSqlDatabase>
@@ -10,6 +10,7 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <qtimer>
+#include <QString>
 
 class ParamsClass  : public QObject
 {
@@ -32,6 +33,7 @@ public:
 	void sendStringListForMaxClass();
 	void writeParamTg();
 	void sendStringListForTelegramClass();
+	void writeParamSms();
 
 
 
