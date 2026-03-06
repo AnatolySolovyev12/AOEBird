@@ -33,7 +33,9 @@ GeneralClass::GeneralClass(QObject *parent)
 
 		});
 
-	
+	smsClass = new SMSClass(nullptr);
+
+	/*
 	QTimer::singleShot(2000, [this]() {
 		//dataBaseClass->insertInUsers("bakalavr12@mail.ru", "art54011212"); 
 		 
@@ -41,7 +43,7 @@ GeneralClass::GeneralClass(QObject *parent)
 		tempList << "1" << "1" << "1" << "89825313114" << "bakalavr12@mail.ru" << "TRUE" << "FALSE" << "TRUE" << "FALSE" << "2026-03-06" << "14:21:30";
 		dataBaseClass->insertInQueueAndHistory(tempList);
 		});
-	
+	*/
 
 
 	/*

@@ -26,7 +26,7 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>6.2.4_msvc2019_64</QtInstall>
-    <QtModules>core;axcontainer;sql;websockets</QtModules>
+    <QtModules>core;axcontainer;serialport;sql;websockets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -64,6 +64,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MaxClass.cpp" />
     <ClCompile Include="ParamsClass.cpp" />
+    <ClCompile Include="SMSClass.cpp" />
     <ClCompile Include="SMTP.cpp" />
     <ClCompile Include="TelegramJacket.cpp" />
   </ItemGroup>
@@ -87,6 +88,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="CheckClass.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="SMSClass.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
