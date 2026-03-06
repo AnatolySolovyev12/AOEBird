@@ -1,4 +1,4 @@
-#include "CheckClass.h"
+п»ї#include "CheckClass.h"
 
 CheckClass::CheckClass(QObject* parent)
 	: QObject(parent), checkTimer(new QTimer())
@@ -41,7 +41,7 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 
 			if (temp[6] == "true") // Telegram
 			{
-				emit sendTelegram("TEST AUTO FOR TELEGRAM"); // надо рихтовать для отправки с chatId
+				emit sendTelegram("TEST AUTO FOR TELEGRAM"); // РЅР°РґРѕ СЂРёС…С‚РѕРІР°С‚СЊ РґР»СЏ РѕС‚РїСЂР°РІРєРё СЃ chatId
 				qDebug() << "TELEGRAM TEST MESSEGE";
 
 			}

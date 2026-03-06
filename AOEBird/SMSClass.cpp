@@ -1,6 +1,6 @@
 ﻿#include "SMSClass.h"
-#include "iostream"
-SMSClass::SMSClass(QObject *parent)
+
+SMSClass::SMSClass(QObject* parent)
 	: QObject(parent), serial(new QSerialPort)
 {
 	connect(serial, &QSerialPort::errorOccurred, [=](QSerialPort::SerialPortError error) {
@@ -19,7 +19,7 @@ SMSClass::SMSClass(QObject *parent)
 	serial->setStopBits(QSerialPort::StopBits(1)); // устанавливаем стоп биты
 
 
-	
+
 	if (!serial->open(QIODeviceBase::ReadWrite)) // открываем в режиме чтения и записи
 		qDebug() << "Error in SMSClass wneh try to open COM port. Error:\n" << serial->errorString();
 	else
@@ -33,10 +33,9 @@ SMSClass::SMSClass(QObject *parent)
 		//QTimer::singleShot(1000, [this]() {writeData("AT+CSCA?"); }); // выводит номер симкарты и формат начала номера (международный(+7) /национальный (8)). То через что будет производится отправка.
 		//"AT+CSCA=?" формат с добавление , перед = просто выводит статус ОК, без подробностей. Тестовая команда и так для всех
 
-		sendSMS("+79825313114", "шо");
-
+		//sendSMS("+79825313114", "Dobryj den'. V vashem rajone planiruetsya otklyuchenie elektrichestva v svyazi s provedeniem rabot.");
 	}
-	
+
 
 }
 
@@ -55,7 +54,7 @@ void SMSClass::readData()
 {
 	buffer += serial->readAll(); // обязательно буферризируем т.к. модем порой отвечает кусками. Там будем получаеть полный ответ для полноценной его обработки
 
-	if (buffer.contains("OK") || buffer.contains("ERROR")) 
+	if (buffer.contains("OK") || buffer.contains("ERROR"))
 	{
 		qDebug() << "RX:" << buffer << '\n';
 		buffer.clear();
@@ -66,7 +65,7 @@ void SMSClass::writeData(QByteArray data)
 {
 	QByteArray command = data + "\r\n"; // без добавления модем не поймёт команды
 	serial->write(command);
-	//qDebug() << "TX:" << command;
+	qDebug() << "TX:" << command;
 }
 
 
@@ -80,8 +79,7 @@ void SMSClass::sendSMS(QString phone, QString text)
 		writeData(temp.toUtf8());
 		});
 
-	QTimer::singleShot(2000, [this, text]() {
-		std::cout << text.toStdString() << std::endl;
+	QTimer::singleShot(1500, [this, text]() {
 		QByteArray smsData = text.toUtf8() + char(26);  //передаём текст для отправки и собственно завершаем формирование смс и отправляем его со спец символом. Без него ждём ввода.
 
 		//Из мануала:
@@ -89,7 +87,7 @@ void SMSClass::sendSMS(QString phone, QString text)
 		//To exit without sending the message issue ESC char(0x1B hex).
 
 		serial->write(smsData);
-	//	qDebug() << "SMS sent:" << smsData;
+		//	qDebug() << "SMS sent:" << smsData;
 		});
 }
 
