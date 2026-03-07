@@ -1,4 +1,4 @@
-#include "DataBaseClass.h"
+п»ї#include "DataBaseClass.h"
 
 DataBaseClass::DataBaseClass(QObject* parent)
 	: QObject(parent)
@@ -26,7 +26,7 @@ void DataBaseClass::connectionToMainDb(QStringList signalList)
 {
 	mainDbConnection = QSqlDatabase::addDatabase("QPSQL", "postgres_connection");
 	mainDbConnection.setHostName(signalList[0]);
-	mainDbConnection.setPort(signalList[1].toInt());  // По умолчанию 5432
+	mainDbConnection.setPort(signalList[1].toInt());  // РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 5432
 	mainDbConnection.setDatabaseName(signalList[2]);
 	mainDbConnection.setUserName(signalList[3]);
 	mainDbConnection.setPassword(signalList[4]);
@@ -101,7 +101,7 @@ void DataBaseClass::insertInQueueAndHistory(QStringList tempList)
 
 	for (int countTable = 1; countTable <= 2; countTable++)
 	{
-		// В Postgre подготовленный запрос на вставку в таблицу почему то иначе интрепретируется и будет гарантированная ошибка. Делаем для таблицы втсавку через .arg() если это требуется.
+		// Р’ Postgre РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅС‹Р№ Р·Р°РїСЂРѕСЃ РЅР° РІСЃС‚Р°РІРєСѓ РІ С‚Р°Р±Р»РёС†Сѓ РїРѕС‡РµРјСѓ С‚Рѕ РёРЅР°С‡Рµ РёРЅС‚СЂРµРїСЂРµС‚РёСЂСѓРµС‚СЃСЏ Рё Р±СѓРґРµС‚ РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРЅР°СЏ РѕС€РёР±РєР°. Р”РµР»Р°РµРј РґР»СЏ С‚Р°Р±Р»РёС†С‹ РІС‚СЃР°РІРєСѓ С‡РµСЂРµР· .arg() РµСЃР»Рё СЌС‚Рѕ С‚СЂРµР±СѓРµС‚СЃСЏ.
 		query.prepare(QString("INSERT INTO %1 (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, mail_send, sms_send, date, time, date_create, time_create) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
 			.arg(countTable == 1 ? "queue_notice" : "history"));
 

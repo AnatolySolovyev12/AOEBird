@@ -73,13 +73,13 @@ void SMSClass::sendSMS(QString phone, QString text)
 {
 	writeData("AT+CMGF=1"); // включаем текстовый режим. Отправка будет производится не из хранилища
 
-	QTimer::singleShot(1000, [this, phone, text]() {
+	QTimer::singleShot(700, [this, phone, text]() {
 
 		QString temp = "AT+CMGS=\"" + phone + "\""; // передаём номер телефона в соответствующем формате
 		writeData(temp.toUtf8());
 		});
 
-	QTimer::singleShot(1500, [this, text]() {
+	QTimer::singleShot(1200, [this, text]() {
 		QByteArray smsData = text.toUtf8() + char(26);  //передаём текст для отправки и собственно завершаем формирование смс и отправляем его со спец символом. Без него ждём ввода.
 
 		//Из мануала:
