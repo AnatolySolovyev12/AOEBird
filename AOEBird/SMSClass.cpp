@@ -1,6 +1,6 @@
 ﻿#include "SMSClass.h"
 
-SMSClass::SMSClass(QObject* parent)
+SMSClass::SMSClass(QObject* parent, QStringList tempList)
 	: QObject(parent), serial(new QSerialPort)
 {
 	connect(serial, &QSerialPort::errorOccurred, [=](QSerialPort::SerialPortError error) {
@@ -11,12 +11,12 @@ SMSClass::SMSClass(QObject* parent)
 
 	connect(serial, &QSerialPort::readyRead, this, &SMSClass::readData);
 
-	serial->setPortName("COM8"); // задаём имя последовательного порта
-	serial->setBaudRate(9600, QSerialPort::AllDirections); // скорость обмена и тип направления
-	serial->setDataBits(QSerialPort::DataBits(8)); // количество бит данных в кадре
+	serial->setPortName(tempList[0]); // задаём имя последовательного порта
+	serial->setBaudRate(tempList[1].toInt(), QSerialPort::AllDirections); // скорость обмена и тип направления
+	serial->setDataBits(QSerialPort::DataBits(tempList[2].toInt())); // количество бит данных в кадре
 	serial->setFlowControl(QSerialPort::NoFlowControl); // контроль управления потоком
-	serial->setParity(QSerialPort::NoParity); // контроль четности
-	serial->setStopBits(QSerialPort::StopBits(1)); // устанавливаем стоп биты
+	serial->setParity(static_cast<QSerialPort::Parity>(tempList[3].toInt())); // контроль четности
+	serial->setStopBits(QSerialPort::StopBits(tempList[4].toInt())); // устанавливаем стоп биты
 
 
 

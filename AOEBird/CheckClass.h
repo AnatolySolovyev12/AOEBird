@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QObject>
 #include <QTimer>
@@ -20,7 +20,7 @@ signals:
 	void sendMax(QString phoneNumber, QString messege);
 	void sendTelegram(QString messege);
 	void sendMail(QString eMail, QString messege, QString files);
-	void sendSMS(QString phoneNumber, QString messege);
+	void sendSMSsignal(QString phoneNumber, QString messege);
 	void deleteInDbSignal(QString id, QString request, QString position);
 
 

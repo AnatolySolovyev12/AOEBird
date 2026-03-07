@@ -10,6 +10,7 @@ ParamsClass::ParamsClass(QObject* parent)
 			writeParamsSmtp();
 			writeParamMax();
 			writeParamTg();
+			writeParamSms();
 		}
 
 	QTimer::singleShot(1000, [this]() {
@@ -17,6 +18,7 @@ ParamsClass::ParamsClass(QObject* parent)
 		sendStringListForSmtpClass();
 		sendStringListForMaxClass();
 		sendStringListForTelegramClass();
+		sendStringListForSmsClass();
 		signalFromParamsClassForStartCheckClass();
 		});
 }
@@ -141,7 +143,7 @@ bool ParamsClass::createTable()
 
 	qDebug() << "CREATE tgParams";
 
-	queryString = ("CREATE TABLE smsParams (portName VARCHAR(20), speed VARCHAR(8)), dataBits VARCHAR(1), partity VARCHAR(1), stopBits VARCHAR(1);");
+	queryString = ("CREATE TABLE smsParams (portName VARCHAR(20), speed VARCHAR(8), dataBits VARCHAR(1), partity VARCHAR(1), stopBits VARCHAR(1));");
 
 	if (!query.exec(queryString))
 	{
@@ -617,12 +619,31 @@ void ParamsClass::writeParamSms()
 
 	} while (true);
 
-	std::string bitsInFrame;
-	qDebug() << "Bits is frame:";
-	std::cin >> bitsInFrame;
+	std::string partity;
+	qDebug() << "Choose your partity: (1-NoParity (recommendary), 2-EvenParity, 3-OddParity, 4-SpaceParity, 5-MarkParity)";
+	std::cin >> partity;
 
 	do {
-		if (bitsInFrame.length() >= 3 || bitsInFrame.length() <= 0)
+		if (partity == "1" || partity == "2" || partity == "3" || partity == "4" || partity == "5")
+		{
+			break;
+		}
+		else
+		{
+		}
+			
+		qDebug() << "Incorrect number of partity in your messege. Try again";
+
+		std::cin >> partity;
+
+	} while (true);
+
+	std::string stopBits;
+	qDebug() << "Stop bits:";
+	std::cin >> stopBits;
+
+	do {
+		if (stopBits.length() >= 2 || stopBits.length() <= 0)
 		{
 		}
 		else
@@ -630,32 +651,18 @@ void ParamsClass::writeParamSms()
 
 		qDebug() << "Incorrect length for your messege. Try again";
 
-		std::cin >> bitsInFrame;
-
-	} while (true);
-
-	std::string partity;
-	qDebug() << "Choose your partity: (1-NoParity (recommendary), 2-EvenParity, 3-OddParity, 4-SpaceParity, 5-MarkParity)";
-	std::cin >> partity;
-
-	do {
-		if (partity != "1" || partity != "2" || partity != "3" || partity != "4" || partity != "5")
-		{
-		}
-		else
-			break;
-
-		qDebug() << "Incorrect number of partity in your messege. Try again";
-
-		std::cin >> partity;
+		std::cin >> stopBits;
 
 	} while (true);
 
 	QSqlQuery query(mainConnection);
 
 	query.prepare("INSERT INTO smsParams (portName, speed, dataBits, partity, stopBits) VALUES (?, ?, ?, ?, ?)");
-	query.addBindValue(QString::fromStdString(token));
-	query.addBindValue(QString::fromStdString(chatIdAdmin));
+	query.addBindValue(QString::fromStdString(comPort));
+	query.addBindValue(QString::fromStdString(baudRate));
+	query.addBindValue(QString::fromStdString(bitsInFrame));
+	query.addBindValue(QString::fromStdString(partity));
+	query.addBindValue(QString::fromStdString(stopBits));
 
 	if (!query.exec())
 	{
@@ -668,11 +675,34 @@ void ParamsClass::writeParamSms()
 			qDebug() << "NOT INSERT in tgParams";
 	}
 	else
-		qDebug() << "Params for Telegram was write";
+		qDebug() << "Params for SMS was write";
 }
 
-serial->setPortName("COM8"); // задаём имя последовательного порта
-serial->setBaudRate(9600, QSerialPort::AllDirections); // скорость обмена и тип направления
-serial->setDataBits(QSerialPort::DataBits(8)); // количество бит данных в кадре
-serial->setParity(QSerialPort::NoParity); // контроль четности
-serial->setStopBits(QSerialPort::StopBits(1)); // устанавливаем стоп биты
+
+
+void ParamsClass::sendStringListForSmsClass()
+{
+	QSqlQuery query(mainConnection);
+	QString queryString = ("SELECT portName, speed, dataBits, partity, stopBits FROM smsParams");
+	QStringList tempList;
+
+	if (!query.exec(queryString) || !query.next())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in ParamsClass::signalFromParamsClassForSmsClass() when try to read from smsParams table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+			emit errorLog("Error in ParamsClass::signalFromParamsClassForSmsClass() when try to read from smsParams table. Query:\n" + query.lastQuery() + "\nError text:\n" + query.lastError().text());
+		}
+		else
+			qDebug() << "NOT READ from smsParams table";
+	}
+	else
+	{
+		for (int count = 0; count < 5; count++)
+		{
+			tempList << query.value(count).toString();
+		}
+
+		emit signalFromParamsClassForSmsClassWithParams(tempList);
+	}
+}

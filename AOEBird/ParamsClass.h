@@ -34,6 +34,7 @@ public:
 	void writeParamTg();
 	void sendStringListForTelegramClass();
 	void writeParamSms();
+	void sendStringListForSmsClass();
 
 
 
@@ -44,6 +45,8 @@ signals:
 	void signalFromParamsClassForMaxWithParams(QStringList tempListSending);
 	void signalFromParamsClassForTelegramWithParams(QStringList tempListSending);
 	void signalFromParamsClassForStartCheckClass();
+	void signalFromParamsClassForSmsClassWithParams(QStringList tempListSending);
+
 
 
 

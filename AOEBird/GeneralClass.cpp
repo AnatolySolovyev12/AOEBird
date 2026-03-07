@@ -1,4 +1,4 @@
-#include "GeneralClass.h"
+ï»¿#include "GeneralClass.h"
 
 GeneralClass::GeneralClass(QObject *parent)
 	: QObject(parent)
@@ -20,20 +20,22 @@ GeneralClass::GeneralClass(QObject *parent)
 		tgClass = new TelegramJacket(nullptr, tempList[0], tempList[1]);
 		});
 
+	connect(paramsClass, &ParamsClass::signalFromParamsClassForSmsClassWithParams, [this](QStringList tempList) {
+		smsClass = new SMSClass(nullptr, tempList);
+		});
+
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForStartCheckClass, [this]() {
 		checkClass = new CheckClass(nullptr);
+
 		connect(checkClass, &CheckClass::checkDbForEvent, dataBaseClass, &DataBaseClass::getQueueValue);
 		connect(dataBaseClass, &DataBaseClass::sendStringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);
-
 		connect(checkClass, &CheckClass::sendMax, maxClass, &MaxClass::checkNumber);
 		connect(checkClass, &CheckClass::sendTelegram, tgClass, &TelegramJacket::sendMessage);
 		connect(checkClass, &CheckClass::sendMail, smtpClass, &SMTP::sendMail);
-		connect(checkClass, &CheckClass::sendSMS, []() { qDebug() << "TEST SMS"; });
+		connect(checkClass, &CheckClass::sendSMSsignal, smsClass, &SMSClass::sendSMS);
 		connect(checkClass, &CheckClass::deleteInDbSignal, dataBaseClass, &DataBaseClass::deleteFromDb);
 
 		});
-
-	smsClass = new SMSClass(nullptr);
 
 	/*
 	QTimer::singleShot(2000, [this]() {
@@ -52,7 +54,7 @@ GeneralClass::GeneralClass(QObject *parent)
 		});
 		*/
 
-	// Íàäî áóäåò âåðíóòü â ìåòîäû îòïðàâêè ñîîáùåíèé ïàðàìåòð ñ chatId/Òåëåôîí
+	// ÐÐ°Ð´Ð¾ Ð±ÑƒÐ´ÐµÑ‚ Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ð² Ð¼ÐµÑ‚Ð¾Ð´Ñ‹ Ð¾Ñ‚Ð¿Ñ€Ð°Ð²ÐºÐ¸ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ð¹ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€ Ñ chatId/Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½
 	/*
 		QTimer::singleShot(4000, [this]() {
 		maxClass->sendMessage("admin", "TEST");

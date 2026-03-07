@@ -11,7 +11,7 @@ class SMSClass : public QObject
 	Q_OBJECT
 
 public:
-	SMSClass(QObject* parent);
+	SMSClass(QObject* parent, QStringList tempList);
 	~SMSClass();
 
 

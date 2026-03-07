@@ -53,7 +53,20 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 
 			if (temp[8] == "true") // SMS
 			{
-				emit sendSMS("89825313114", "TEST SMS");
+				QString tempNumber = temp[3];
+
+				if (tempNumber[0] == '8')
+				{
+					tempNumber[0] = '7';
+					tempNumber.push_front('+');
+				}
+
+				if (tempNumber[0] == '7')
+				{
+					tempNumber.push_front('+');
+				}
+
+				emit sendSMSsignal(tempNumber, "TEST SMS");
 			}
 
 			emit deleteInDbSignal(temp[0], temp[1], temp[2]);
