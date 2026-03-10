@@ -13,7 +13,8 @@ ParamsClass::ParamsClass(QObject* parent)
 			writeParamSms();
 		}
 
-	QTimer::singleShot(1000, [this]() {
+	QTimer::singleShot(1000, [this]() 
+		{
 		readyPostreSQL = sendStringListForMainDb();
 		readyMail = sendStringListForSmtpClass();
 		readyMax = sendStringListForMaxClass();
@@ -339,12 +340,18 @@ void ParamsClass::writeParamsSmtp()
 	QString queryString = ("CREATE TABLE smtpParams (mailSender VARCHAR(40), passForApp VARCHAR(30), host VARCHAR(30));");
 
 	std::string mailSender;
-	qDebug() << "Mail for send:";
+	qDebug() << "Write Mail for send or (P/p) for pass this block:";
 	std::cin >> mailSender;
-	mailSender = validateText(mailSender);
+	if (mailSender == "P" || mailSender == "p")
+	{
+		qDebug() << "Mail sending was pass";
+		return;
+	}
+	else
+		mailSender = validateText(mailSender);
 
 	std::string passForApp;
-	qDebug() << "Pass for external app:";
+	qDebug() << "Password for external app:";
 	std::cin >> passForApp;
 	passForApp = validateText(passForApp);
 
@@ -412,21 +419,27 @@ bool ParamsClass::sendStringListForSmtpClass()
 void ParamsClass::writeParamMax()
 {
 	std::string url;
-	qDebug() << "URL for MAX:";
+	qDebug() << "Write URL for MAX or (P/p) for pass this block:";
 	std::cin >> url;
 
-	do {
-		if (url.length() >= 300 || url.length() <= 10)
-		{
-		}
-		else
-			break;
+	if (url == "P" || url == "p")
+	{
+		qDebug() << "MAX sending was pass";
+		return;
+	}
+	else
+		do {
+			if (url.length() >= 300 || url.length() <= 10)
+			{
+			}
+			else
+				break;
 
-		qDebug() << "Incorrect length for your messege. Try again";
+			qDebug() << "Incorrect length for your messege. Try again";
 
-		std::cin >> url;
+			std::cin >> url;
 
-	} while (true);
+		} while (true);
 
 	std::string chatIdAdmin;
 	qDebug() << "Phone number for admin:";
@@ -503,21 +516,27 @@ bool ParamsClass::sendStringListForMaxClass()
 void ParamsClass::writeParamTg()
 {
 	std::string token;
-	qDebug() << "Token for Telegram:";
+	qDebug() << "Write Token for Telegram or (P/p) for pass this block:";
 	std::cin >> token;
 
-	do {
-		if (token.length() >= 100 || token.length() <= 10)
-		{
-		}
-		else
-			break;
+	if (token == "P" || token == "p")
+	{
+		qDebug() << "Telegram sending was pass";
+		return;
+	}
+	else
+		do {
+			if (token.length() >= 100 || token.length() <= 10)
+			{
+			}
+			else
+				break;
 
-		qDebug() << "Incorrect length for your messege. Try again";
+			qDebug() << "Incorrect length for your messege. Try again";
 
-		std::cin >> token;
+			std::cin >> token;
 
-	} while (true);
+		} while (true);
 
 	std::string chatIdAdmin;
 	qDebug() << "ChatID for admin:";
@@ -594,21 +613,27 @@ bool ParamsClass::sendStringListForTelegramClass()
 void ParamsClass::writeParamSms()
 {
 	std::string comPort;
-	qDebug() << "COM port for sms (Example: COM1):";
+	qDebug() << "COM port for sms (Example: COM1) or (P/p) for pass this block:";
 	std::cin >> comPort;
 
-	do {
-		if (comPort.length() >= 6 || comPort.length() <= 3)
-		{
-		}
-		else
-			break;
+	if (comPort == "P" || comPort == "p")
+	{
+		qDebug() << "SMS sending was pass";
+		return;
+	}
+	else
+		do {
+			if (comPort.length() >= 6 || comPort.length() <= 3)
+			{
+			}
+			else
+				break;
 
-		qDebug() << "Incorrect length for your messege. Try again";
+			qDebug() << "Incorrect length for your messege. Try again";
 
-		std::cin >> comPort;
+			std::cin >> comPort;
 
-	} while (true);
+		} while (true);
 
 	std::string baudRate;
 	qDebug() << "Baud rate:";

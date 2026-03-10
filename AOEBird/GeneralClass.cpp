@@ -1,19 +1,19 @@
 ﻿#include "GeneralClass.h"
 
-GeneralClass::GeneralClass(QObject *parent)
+GeneralClass::GeneralClass(QObject* parent)
 	: QObject(parent)
 {
 	dataBaseClass = new DataBaseClass(nullptr);
-	paramsClass =  new ParamsClass(nullptr);
+	paramsClass = new ParamsClass(nullptr);
 
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForConnectToMainDb, dataBaseClass, &DataBaseClass::connectionToMainDb);
-	
+
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForSmtpWithParams, [this](QStringList tempList) {
 		smtpClass = new SMTP(tempList[0], tempList[1], tempList[2]);
 		});
 
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForMaxWithParams, [this](QStringList tempList) {
-		maxClass = new MaxClass(nullptr,  tempList[0], tempList[1]);
+		maxClass = new MaxClass(nullptr, tempList[0], tempList[1]);
 		});
 
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForTelegramWithParams, [this](QStringList tempList) {
@@ -29,18 +29,22 @@ GeneralClass::GeneralClass(QObject *parent)
 
 		connect(checkClass, &CheckClass::checkDbForEvent, dataBaseClass, &DataBaseClass::getQueueValue);
 		connect(dataBaseClass, &DataBaseClass::sendStringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);
-		connect(checkClass, &CheckClass::sendMax, maxClass, &MaxClass::checkNumber);
-		connect(checkClass, &CheckClass::sendTelegram, tgClass, &TelegramJacket::sendMessage);
-		connect(checkClass, &CheckClass::sendMail, smtpClass, &SMTP::sendMail);
-		connect(checkClass, &CheckClass::sendSMSsignal, smsClass, &SMSClass::sendSMS);
 		connect(checkClass, &CheckClass::deleteInDbSignal, dataBaseClass, &DataBaseClass::deleteFromDb);
 
+		if (readyMax)
+			connect(checkClass, &CheckClass::sendMax, maxClass, &MaxClass::checkNumber);
+		if (readyTelegram)
+			connect(checkClass, &CheckClass::sendTelegram, tgClass, &TelegramJacket::sendMessage);
+		if (readyMail)
+			connect(checkClass, &CheckClass::sendMail, smtpClass, &SMTP::sendMail);
+		if (readySms)
+			connect(checkClass, &CheckClass::sendSMSsignal, smsClass, &SMSClass::sendSMS);
 		});
 
 	/*
 	QTimer::singleShot(2000, [this]() {
-		//dataBaseClass->insertInUsers("bakalavr12@mail.ru", "art54011212"); 
-		 
+		//dataBaseClass->insertInUsers("bakalavr12@mail.ru", "art54011212");
+
 		QStringList tempList;
 		tempList << "1" << "1" << "1" << "89825313114" << "bakalavr12@mail.ru" << "TRUE" << "FALSE" << "TRUE" << "FALSE" << "2026-03-06" << "14:21:30";
 		dataBaseClass->insertInQueueAndHistory(tempList);
@@ -54,28 +58,28 @@ GeneralClass::GeneralClass(QObject *parent)
 		});
 		*/
 
-	// Надо будет вернуть в методы отправки сообщений параметр с chatId/Телефон
-	/*
-		QTimer::singleShot(4000, [this]() {
-		maxClass->sendMessage("admin", "TEST");
-		});
-		*/
-
-
-	/*
-		QTimer::singleShot(4000, [this]() {
-			maxClass->checkNumber("admin", "TEST WITH ADMIN");
+		// Надо будет вернуть в методы отправки сообщений параметр с chatId/Телефон
+		/*
+			QTimer::singleShot(4000, [this]() {
+			maxClass->sendMessage("admin", "TEST");
 			});
-		*/
+			*/
+
+
+			/*
+				QTimer::singleShot(4000, [this]() {
+					maxClass->checkNumber("admin", "TEST WITH ADMIN");
+					});
+				*/
 
 
 
-	/*
-	QTimer::singleShot(4000, [this]() {
-		tgClass->sendMessage("TEST");
-		});
-		*/
-		
+				/*
+				QTimer::singleShot(4000, [this]() {
+					tgClass->sendMessage("TEST");
+					});
+					*/
+
 }
 
 

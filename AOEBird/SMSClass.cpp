@@ -1,12 +1,20 @@
 ﻿#include "SMSClass.h"
 
 SMSClass::SMSClass(QObject* parent, QStringList tempList)
-	: QObject(parent), serial(new QSerialPort)
+	: QObject(parent), serial(new QSerialPort), checkComTimer(new QTimer)
 {
 	connect(serial, &QSerialPort::errorOccurred, [=](QSerialPort::SerialPortError error) 
 		{
-		if (error != QSerialPort::NoError) 
-			qDebug() << "Error occurred: " << error;
+			if (error != QSerialPort::NoError)
+			{
+				qDebug() << "Error occurred: " << error;
+
+				if (error == QSerialPort::ResourceError) 
+				{
+					qDebug() << "Device disconnected or other problem:" << serial->errorString();
+					serial->close();
+				}
+			}
 		});
 
 	connect(serial, &QSerialPort::readyRead, this, &SMSClass::readData);
@@ -19,13 +27,16 @@ SMSClass::SMSClass(QObject* parent, QStringList tempList)
 	serial->setStopBits(QSerialPort::StopBits(tempList[4].toInt())); // устанавливаем стоп биты
 
 	if (!serial->open(QIODeviceBase::ReadWrite)) // открываем в режиме чтения и записи
-		qDebug() << "Error in SMSClass wneh try to open COM port. Error:\n" << serial->errorString();
+	{
+		std::cout << "Error in SMSClass wneh try to open " << tempList[0].toStdString() << ". Error:\n" << serial->errorString().toStdString() << std::endl;
+		readyForSend = false;
+	}
 	else
 	{
 		serial->setDataTerminalReady(true); //DTS
 		serial->setRequestToSend(true); //RTS
-
-		qDebug() << "COM8 is OPEN";
+		readyForSend = true;
+		qDebug() << "SMSClass: " + serial->portName() + " is OPEN";
 
 		//QTimer::singleShot(500, [this]() {writeData("AT"); }); // лучше начинать с неё
 		//QTimer::singleShot(1000, [this]() {writeData("AT+CSCA?"); }); // выводит номер симкарты и формат начала номера (международный(+7) /национальный (8)). То через что будет производится отправка.
@@ -33,6 +44,9 @@ SMSClass::SMSClass(QObject* parent, QStringList tempList)
 
 		//sendSMS("+79825313114", "Dobryj den'. V vashem rajone planiruetsya otklyuchenie elektrichestva v svyazi s provedeniem rabot.");
 	}
+
+	connect(checkComTimer, &QTimer::timeout, this, &SMSClass::checkAndReconnectComPort);
+	checkComTimer->start(5000);
 }
 
 SMSClass::~SMSClass()
@@ -52,7 +66,15 @@ void SMSClass::readData()
 
 	if (buffer.contains("OK") || buffer.contains("ERROR"))
 	{
-		qDebug() << "RX:" << buffer << '\n';
+		if (testIsRunning)
+		{
+			qDebug() << "Test " + serial->portName() + ": " << buffer << '\n';
+			testIsRunning = false;
+		}
+		else
+		{
+			qDebug() << "RX:" << buffer << '\n';
+		}
 		buffer.clear();
 	}
 }
@@ -67,6 +89,12 @@ void SMSClass::writeData(QByteArray data)
 
 void SMSClass::sendSMS(QString phone, QString text)
 {
+	if (!readyForSend)
+	{
+		qDebug() << serial->portName() + " not Ready for send SMS. Check your device, COM port or other moment";
+		return;
+	}
+
 	writeData("AT+CMGF=1"); // включаем текстовый режим. Отправка будет производится не из хранилища
 
 	QTimer::singleShot(700, [this, phone, text]() {
@@ -85,5 +113,34 @@ void SMSClass::sendSMS(QString phone, QString text)
 		serial->write(smsData);
 		//	qDebug() << "SMS sent:" << smsData;
 		});
+}
+
+
+
+void SMSClass::checkAndReconnectComPort()
+{
+	if (serial->isOpen())
+	{
+		testIsRunning = true;
+		QByteArray testCommand = "AT\r";
+		qint64 bytesWritten = serial->write(testCommand);
+
+		if (bytesWritten == -1) 
+		{
+			qDebug() << "Device " + serial->portName() + " is not answer";
+		}
+	}
+	else
+	{
+		if (!serial->open(QIODeviceBase::ReadWrite)) // открываем в режиме чтения и записи
+		{
+			std::cout << "Error in SMSClass wneh try to open " << serial->portName().toStdString() << ". Error:\n" << serial->errorString().toStdString() << std::endl;
+			readyForSend = false;
+		}
+		else
+		{
+			std::cout << "Reconnect to " << serial->portName().toStdString() << std::endl;
+		}
+	}
 }
 

@@ -5,6 +5,7 @@
 #include <QSerialPortInfo>
 #include <qdebug>
 #include <qtimer>
+#include <iostream>
 
 class SMSClass : public QObject
 {
@@ -19,9 +20,12 @@ public:
 	void readData();
 	void writeData(QByteArray data);
 	void sendSMS(QString phone, QString text);
-
+	void checkAndReconnectComPort();
 
 private:
 	QSerialPort* serial = nullptr;
 	QByteArray buffer;;
+	bool readyForSend = false;
+	QTimer* checkComTimer = nullptr;
+	bool testIsRunning = false;
 };
