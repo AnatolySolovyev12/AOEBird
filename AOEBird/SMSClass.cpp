@@ -40,7 +40,7 @@ SMSClass::SMSClass(QObject* parent, QStringList tempList)
 	}
 
 	connect(checkComTimer, &QTimer::timeout, this, &SMSClass::checkAndReconnectComPort);
-	checkComTimer->start(35000);
+	checkComTimer->start(180000);
 }
 
 SMSClass::~SMSClass()
