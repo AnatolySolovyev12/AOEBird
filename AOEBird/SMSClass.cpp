@@ -3,13 +3,13 @@
 SMSClass::SMSClass(QObject* parent, QStringList tempList)
 	: QObject(parent), serial(new QSerialPort), checkComTimer(new QTimer)
 {
-	connect(serial, &QSerialPort::errorOccurred, [=](QSerialPort::SerialPortError error) 
+	connect(serial, &QSerialPort::errorOccurred, [=](QSerialPort::SerialPortError error)
 		{
 			if (error != QSerialPort::NoError)
 			{
 				qDebug() << "Error occurred: " << error;
 
-				if (error == QSerialPort::ResourceError) 
+				if (error == QSerialPort::ResourceError)
 				{
 					qDebug() << "Device disconnected or other problem:" << serial->errorString();
 					serial->close();
@@ -37,16 +37,10 @@ SMSClass::SMSClass(QObject* parent, QStringList tempList)
 		serial->setRequestToSend(true); //RTS
 		readyForSend = true;
 		qDebug() << "SMSClass: " + serial->portName() + " is OPEN";
-
-		//QTimer::singleShot(500, [this]() {writeData("AT"); }); // лучше начинать с неё
-		//QTimer::singleShot(1000, [this]() {writeData("AT+CSCA?"); }); // выводит номер симкарты и формат начала номера (международный(+7) /национальный (8)). То через что будет производится отправка.
-		//"AT+CSCA=?" формат с добавление , перед = просто выводит статус ОК, без подробностей. Тестовая команда и так для всех
-
-		//sendSMS("+79825313114", "Dobryj den'. V vashem rajone planiruetsya otklyuchenie elektrichestva v svyazi s provedeniem rabot.");
 	}
 
 	connect(checkComTimer, &QTimer::timeout, this, &SMSClass::checkAndReconnectComPort);
-	checkComTimer->start(5000);
+	checkComTimer->start(35000);
 }
 
 SMSClass::~SMSClass()
@@ -66,10 +60,32 @@ void SMSClass::readData()
 
 	if (buffer.contains("OK") || buffer.contains("ERROR"))
 	{
-		if (testIsRunning)
+		if (testIsRunningForConnect || testIsRunningForSmsCentre)
 		{
-			qDebug() << "Test " + serial->portName() + ": " << buffer << '\n';
-			testIsRunning = false;
+			if (testIsRunningForConnect)
+			{
+				qDebug() << "Test " + serial->portName() + " at \"AT\" with buffer: " << buffer << '\n'; // проверка доступности модема
+				testIsRunningForConnect = false;
+			}
+
+			if (testIsRunningForSmsCentre)
+			{
+				qDebug() << "Test " + serial->portName() + " at \"AT+CSCA?\" with buffer: " << buffer << '\n'; // проверка регистрации симкарты в сети и наличияя СМС центра
+				testIsRunningForSmsCentre = false;
+
+				if (buffer.contains("ERROR"))
+				{
+					QTimer::singleShot(100, [this]() {
+						QByteArray rebootComand = "AT#REBOOT\r"; // перезапуск в случае получения ошибки вместо номера СМС центра
+						qint64 rebootRetunrByte = serial->write(rebootComand);
+
+						if (rebootRetunrByte == -1)
+							qDebug() << "Device " + serial->portName() + " is not reboot on \"AT#REBOOT\"";
+						else
+							qDebug() << "Reboot " + serial->portName() + " at \"AT#REBOOT\"" << '\n';
+						});
+				}
+			}
 		}
 		else
 		{
@@ -121,14 +137,24 @@ void SMSClass::checkAndReconnectComPort()
 {
 	if (serial->isOpen())
 	{
-		testIsRunning = true;
+		testIsRunningForConnect = true;
 		QByteArray testCommand = "AT\r";
-		qint64 bytesWritten = serial->write(testCommand);
+		qint64 bytesWrittenFirst = serial->write(testCommand); // проверка доступности модема
 
-		if (bytesWritten == -1) 
+		if (bytesWrittenFirst == -1)
 		{
-			qDebug() << "Device " + serial->portName() + " is not answer";
+			qDebug() << "Device " + serial->portName() + " is not answer at \"AT\"";
 		}
+
+		QTimer::singleShot(50, [this]() {
+			QByteArray testCommandSmsCentre = "AT+CSCA?\r";
+			testIsRunningForSmsCentre = true;
+			qint64 bytesWrittenSecond = serial->write(testCommandSmsCentre); // проверка регистрации симкарты в сети и наличияя СМС центра
+			if (bytesWrittenSecond == -1)
+			{
+				qDebug() << "Device " + serial->portName() + " is not answer at \"AT+CSCA?\"";
+			}
+			});
 	}
 	else
 	{
@@ -143,4 +169,3 @@ void SMSClass::checkAndReconnectComPort()
 		}
 	}
 }
-

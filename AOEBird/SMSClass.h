@@ -27,5 +27,6 @@ private:
 	QByteArray buffer;;
 	bool readyForSend = false;
 	QTimer* checkComTimer = nullptr;
-	bool testIsRunning = false;
+	bool testIsRunningForConnect = false;
+	bool testIsRunningForSmsCentre = false;
 };
