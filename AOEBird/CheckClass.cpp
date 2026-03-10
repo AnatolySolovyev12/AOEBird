@@ -1,7 +1,7 @@
 ﻿#include "CheckClass.h"
 
-CheckClass::CheckClass(QObject* parent)
-	: QObject(parent), checkTimer(new QTimer())
+CheckClass::CheckClass(QObject* parent, bool readyMax, bool readyTelegram, bool readyMail, bool readySms)
+	: QObject(parent), checkTimer(new QTimer()), m_readyMax(readyMax), m_readyTelegram(readyTelegram), m_readyMail(readyMail), m_readySms(readySms)
 {
 	connect(checkTimer, &QTimer::timeout, this, &CheckClass::checkDbForEvent);
 	checkTimer->start(5000);
@@ -22,7 +22,7 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 			qDebug() << temp;
 			qDebug() << "Event is Done: " << QDate::currentDate() << " Current: " << QDate::fromString(temp[9], "yyyy-MM-dd") << "   " << QTime::fromString(temp[10]) << " Current: " << QTime::currentTime();
 
-			if (temp[5] == "true") // MAX
+			if (temp[5] == "true" && m_readyMax) // MAX
 			{
 				if (temp[3][0] == '8')
 				{
@@ -39,19 +39,19 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 				qDebug() << "MAX TEST MESSEGE";
 			}
 
-			if (temp[6] == "true") // Telegram
+			if (temp[6] == "true" && m_readyTelegram) // Telegram
 			{
 				emit sendTelegram("TEST AUTO FOR TELEGRAM"); // надо рихтовать для отправки с chatId
 				qDebug() << "TELEGRAM TEST MESSEGE";
 
 			}
 			
-			if (temp[7] == "true") // Mail
+			if (temp[7] == "true" && m_readyMail) // Mail
 			{
 				emit sendMail(temp[4], "TEST AUTO FOR MAIL", "");
 			}
 
-			if (temp[8] == "true") // SMS
+			if (temp[8] == "true" && m_readySms) // SMS
 			{
 				QString tempNumber = temp[3];
 

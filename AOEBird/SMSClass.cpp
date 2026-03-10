@@ -3,10 +3,10 @@
 SMSClass::SMSClass(QObject* parent, QStringList tempList)
 	: QObject(parent), serial(new QSerialPort)
 {
-	connect(serial, &QSerialPort::errorOccurred, [=](QSerialPort::SerialPortError error) {
-		if (error != QSerialPort::NoError) {
+	connect(serial, &QSerialPort::errorOccurred, [=](QSerialPort::SerialPortError error) 
+		{
+		if (error != QSerialPort::NoError) 
 			qDebug() << "Error occurred: " << error;
-		}
 		});
 
 	connect(serial, &QSerialPort::readyRead, this, &SMSClass::readData);
@@ -17,8 +17,6 @@ SMSClass::SMSClass(QObject* parent, QStringList tempList)
 	serial->setFlowControl(QSerialPort::NoFlowControl); // контроль управления потоком
 	serial->setParity(static_cast<QSerialPort::Parity>(tempList[3].toInt())); // контроль четности
 	serial->setStopBits(QSerialPort::StopBits(tempList[4].toInt())); // устанавливаем стоп биты
-
-
 
 	if (!serial->open(QIODeviceBase::ReadWrite)) // открываем в режиме чтения и записи
 		qDebug() << "Error in SMSClass wneh try to open COM port. Error:\n" << serial->errorString();
@@ -35,8 +33,6 @@ SMSClass::SMSClass(QObject* parent, QStringList tempList)
 
 		//sendSMS("+79825313114", "Dobryj den'. V vashem rajone planiruetsya otklyuchenie elektrichestva v svyazi s provedeniem rabot.");
 	}
-
-
 }
 
 SMSClass::~SMSClass()

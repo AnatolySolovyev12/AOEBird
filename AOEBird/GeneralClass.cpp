@@ -24,8 +24,8 @@ GeneralClass::GeneralClass(QObject *parent)
 		smsClass = new SMSClass(nullptr, tempList);
 		});
 
-	connect(paramsClass, &ParamsClass::signalFromParamsClassForStartCheckClass, [this]() {
-		checkClass = new CheckClass(nullptr);
+	connect(paramsClass, &ParamsClass::signalFromParamsClassForStartCheckClass, [this](bool readyMax, bool readyTelegram, bool readyMail, bool readySms) {
+		checkClass = new CheckClass(nullptr, readyMax, readyTelegram, readyMail, readySms);
 
 		connect(checkClass, &CheckClass::checkDbForEvent, dataBaseClass, &DataBaseClass::getQueueValue);
 		connect(dataBaseClass, &DataBaseClass::sendStringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);

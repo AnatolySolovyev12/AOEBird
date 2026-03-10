@@ -37,7 +37,7 @@ void DataBaseClass::connectionToMainDb(QStringList signalList)
 	}
 	else
 	{
-		qDebug() << "OPEN " << signalList[2];
+		qDebug() << "OPEN PostgreSQL data base (" << signalList[2] << ')';
 
 		createMainTables();
 	}

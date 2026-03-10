@@ -26,15 +26,15 @@ public:
 	std::string validateHost(std::string tempHost);
 	std::string validatePort(std::string tempPort);
 	std::string validateText(std::string tempString);
-	void sendStringListForMainDb();
+	bool sendStringListForMainDb();
 	void writeParamsSmtp();
-	void sendStringListForSmtpClass();
+	bool sendStringListForSmtpClass();
 	void writeParamMax();
-	void sendStringListForMaxClass();
+	bool sendStringListForMaxClass();
 	void writeParamTg();
-	void sendStringListForTelegramClass();
+	bool sendStringListForTelegramClass();
 	void writeParamSms();
-	void sendStringListForSmsClass();
+	bool sendStringListForSmsClass();
 
 
 
@@ -44,7 +44,7 @@ signals:
 	void signalFromParamsClassForSmtpWithParams(QStringList tempListSending);
 	void signalFromParamsClassForMaxWithParams(QStringList tempListSending);
 	void signalFromParamsClassForTelegramWithParams(QStringList tempListSending);
-	void signalFromParamsClassForStartCheckClass();
+	void signalFromParamsClassForStartCheckClass(bool max, bool tg, bool mail, bool sms);
 	void signalFromParamsClassForSmsClassWithParams(QStringList tempListSending);
 
 
@@ -53,5 +53,12 @@ signals:
 
 private:
 	QSqlDatabase mainConnection;
+	bool readySQLite = false;
+	bool readyPostreSQL = false;
+	bool readyMax = false;
+	bool readyTelegram = false;
+	bool readyMail = false;
+	bool readySms = false;
+
 };
 

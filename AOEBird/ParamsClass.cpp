@@ -14,12 +14,16 @@ ParamsClass::ParamsClass(QObject* parent)
 		}
 
 	QTimer::singleShot(1000, [this]() {
-		sendStringListForMainDb();
-		sendStringListForSmtpClass();
-		sendStringListForMaxClass();
-		sendStringListForTelegramClass();
-		sendStringListForSmsClass();
-		signalFromParamsClassForStartCheckClass();
+		readyPostreSQL = sendStringListForMainDb();
+		readyMail = sendStringListForSmtpClass();
+		readyMax = sendStringListForMaxClass();
+		readyTelegram = sendStringListForTelegramClass();
+		readySms = sendStringListForSmsClass();
+
+		if (readyPostreSQL)
+			signalFromParamsClassForStartCheckClass(readyMax, readyTelegram, readyMail, readySms);
+		else
+			qDebug() << "Check params for PostreSQL connect and try to start again. Delete startingParamsDb in main directory and try again";
 		});
 }
 
@@ -64,7 +68,12 @@ bool ParamsClass::createOrConnectParamsBd()
 		return false;
 	}
 
-	qDebug() << "OPEN startingParamsDb";
+	if (!tempForCreateTable)
+		qDebug() << "OPEN SQLite file with starting params (startingParamsDb)";
+	else
+		qDebug() << "CREATE SQLite file with starting params (startingParamsDb)";
+
+	readySQLite = true;
 
 	return tempForCreateTable;
 }
@@ -274,7 +283,7 @@ std::string ParamsClass::validateText(std::string tempString)
 	std::string tempStringForCheck = tempString;
 
 	do {
-		
+
 		if (tempStringForCheck.length() >= 35 || tempStringForCheck.length() <= 2)
 		{
 		}
@@ -292,7 +301,7 @@ std::string ParamsClass::validateText(std::string tempString)
 
 
 
-void ParamsClass::sendStringListForMainDb()
+bool ParamsClass::sendStringListForMainDb()
 {
 	QSqlQuery query(mainConnection);
 	QString queryString = ("SELECT ip, port, name, login, password FROM DbGeneralParams");
@@ -307,6 +316,8 @@ void ParamsClass::sendStringListForMainDb()
 		}
 		else
 			qDebug() << "NOT READ from DbGeneralParams table";
+
+		return false;
 	}
 	else
 	{
@@ -316,6 +327,8 @@ void ParamsClass::sendStringListForMainDb()
 		}
 
 		emit signalFromParamsClassForConnectToMainDb(tempList);
+
+		return true;
 	}
 }
 
@@ -363,7 +376,7 @@ void ParamsClass::writeParamsSmtp()
 
 
 
-void ParamsClass::sendStringListForSmtpClass()
+bool ParamsClass::sendStringListForSmtpClass()
 {
 	QSqlQuery query(mainConnection);
 	QString queryString = ("SELECT mailSender,  passForApp, host FROM smtpParams");
@@ -378,6 +391,8 @@ void ParamsClass::sendStringListForSmtpClass()
 		}
 		else
 			qDebug() << "NOT READ from smtpParams table";
+
+		return false;
 	}
 	else
 	{
@@ -387,6 +402,8 @@ void ParamsClass::sendStringListForSmtpClass()
 		}
 
 		emit signalFromParamsClassForSmtpWithParams(tempList);
+
+		return true;
 	}
 }
 
@@ -450,7 +467,7 @@ void ParamsClass::writeParamMax()
 
 
 
-void ParamsClass::sendStringListForMaxClass()
+bool ParamsClass::sendStringListForMaxClass()
 {
 	QSqlQuery query(mainConnection);
 	QString queryString = ("SELECT url, chatIdAdmin FROM maxParams");
@@ -465,6 +482,8 @@ void ParamsClass::sendStringListForMaxClass()
 		}
 		else
 			qDebug() << "NOT READ from maxParams table";
+
+		return false;
 	}
 	else
 	{
@@ -474,6 +493,8 @@ void ParamsClass::sendStringListForMaxClass()
 		}
 
 		emit signalFromParamsClassForMaxWithParams(tempList);
+
+		return true;
 	}
 }
 
@@ -537,7 +558,7 @@ void ParamsClass::writeParamTg()
 
 
 
-void ParamsClass::sendStringListForTelegramClass()
+bool ParamsClass::sendStringListForTelegramClass()
 {
 	QSqlQuery query(mainConnection);
 	QString queryString = ("SELECT token, chatIdAdmin FROM tgParams");
@@ -552,6 +573,8 @@ void ParamsClass::sendStringListForTelegramClass()
 		}
 		else
 			qDebug() << "NOT READ from tgParams table";
+
+		return false;
 	}
 	else
 	{
@@ -561,6 +584,8 @@ void ParamsClass::sendStringListForTelegramClass()
 		}
 
 		emit signalFromParamsClassForTelegramWithParams(tempList);
+
+		return true;
 	}
 }
 
@@ -631,7 +656,7 @@ void ParamsClass::writeParamSms()
 		else
 		{
 		}
-			
+
 		qDebug() << "Incorrect number of partity in your messege. Try again";
 
 		std::cin >> partity;
@@ -680,7 +705,7 @@ void ParamsClass::writeParamSms()
 
 
 
-void ParamsClass::sendStringListForSmsClass()
+bool ParamsClass::sendStringListForSmsClass()
 {
 	QSqlQuery query(mainConnection);
 	QString queryString = ("SELECT portName, speed, dataBits, partity, stopBits FROM smsParams");
@@ -695,6 +720,8 @@ void ParamsClass::sendStringListForSmsClass()
 		}
 		else
 			qDebug() << "NOT READ from smsParams table";
+
+		return false;
 	}
 	else
 	{
@@ -704,5 +731,7 @@ void ParamsClass::sendStringListForSmsClass()
 		}
 
 		emit signalFromParamsClassForSmsClassWithParams(tempList);
+
+		return true;
 	}
 }

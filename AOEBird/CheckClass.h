@@ -10,7 +10,7 @@ class CheckClass  : public QObject
 	Q_OBJECT
 
 public:
-	CheckClass(QObject *parent);
+	CheckClass(QObject *parent, bool readyMax, bool readyTelegram, bool readyMail, bool readySms);
 	~CheckClass();
 
 	void checkValuesFromDb(QStringList temp);
@@ -23,9 +23,12 @@ signals:
 	void sendSMSsignal(QString phoneNumber, QString messege);
 	void deleteInDbSignal(QString id, QString request, QString position);
 
-
-
 private:
 	QTimer* checkTimer = nullptr;
+
+	bool m_readyMax = false;
+	bool m_readyTelegram = false;
+	bool m_readyMail = false;
+	bool m_readySms = false;
 };
 
