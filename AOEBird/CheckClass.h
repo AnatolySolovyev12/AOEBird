@@ -13,7 +13,7 @@ public:
 	CheckClass(QObject *parent, bool readyMax, bool readyTelegram, bool readyMail, bool readySms);
 	~CheckClass();
 
-	void checkValuesFromDb(QStringList temp);
+	void checkValuesFromDb(QStringList temp, QString chatIdFromSignal);
 
 signals:
 	void checkDbForEvent();

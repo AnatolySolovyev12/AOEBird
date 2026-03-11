@@ -27,7 +27,7 @@ public:
 	void insertInTelegramPhoneTable(QString chat, QString phone);
 
 signals:
-	void sendStringListFromQueue(QStringList temp);
+	void sendStringListFromQueue(QStringList temp, QString chatIdTg);
 
 
 private:

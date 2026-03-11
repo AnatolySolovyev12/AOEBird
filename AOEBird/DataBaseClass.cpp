@@ -150,6 +150,7 @@ void DataBaseClass::getQueueValue()
 		if (!mainDbConnection.open())
 		{
 			qDebug() << "Error in DataBaseClass::getQueueValue() when check database is OPEN." << "\nError text:\n" << mainDbConnection.lastError().text();
+			return;
 		}
 		else
 		{
@@ -171,13 +172,31 @@ void DataBaseClass::getQueueValue()
 	else
 	{
 		QStringList tempStringList;
+		QString chatIdForTgInSignal = "";
 
 		for (int counter = 0; counter < 11; counter++)
 		{
 			tempStringList << query.value(counter).toString();
 		}
 
-		emit sendStringListFromQueue(tempStringList);
+		if (tempStringList[6] == "true")
+		{
+			QString temp = tempStringList[3].sliced(2);
+
+			if (!query.exec(QString("SELECT chatId FROM telegramPhoneTable WHERE phoneNumber LIKE '%%1'").arg(temp)) || !query.next())
+			{
+				if (query.lastError().isValid())
+				{
+					qDebug() << "Error in DataBaseClass::getQueueValue() when try to get chatId from queue_notice. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
+				}
+				//else
+				//	qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET ChatId from queue_notice";
+			}
+			else
+				chatIdForTgInSignal = query.value(0).toString();
+		}
+		
+		emit sendStringListFromQueue(tempStringList, chatIdForTgInSignal);
 	}
 }
 

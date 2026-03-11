@@ -11,7 +11,7 @@ CheckClass::~CheckClass()
 {
 }
 
-void CheckClass::checkValuesFromDb(QStringList temp)
+void CheckClass::checkValuesFromDb(QStringList temp, QString chatIdFromSignal)
 {
 	qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " Check...";
 
@@ -39,9 +39,9 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 				qDebug() << "MAX TEST MESSEGE";
 			}
 
-			if (temp[6] == "true" && m_readyTelegram) // Telegram
+			if (temp[6] == "true" && m_readyTelegram && chatIdFromSignal != "") // Telegram
 			{
-				emit sendTelegram("1443295378", "TEST AUTO FOR TELEGRAM"); // надо рихтовать для отправки с chatId
+				emit sendTelegram(chatIdFromSignal, "TEST AUTO FOR TELEGRAM"); // надо рихтовать для отправки с chatId
 				qDebug() << "TELEGRAM TEST MESSEGE";
 
 			}
@@ -49,6 +49,7 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 			if (temp[7] == "true" && m_readyMail) // Mail
 			{
 				emit sendMail(temp[4], "TEST AUTO FOR MAIL", "");
+				qDebug() << "MAIL TEST MESSEGE";
 			}
 
 			if (temp[8] == "true" && m_readySms) // SMS
@@ -67,6 +68,7 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 				}
 
 				emit sendSMSsignal(tempNumber, "TEST SMS");
+				qDebug() << "SMS TEST MESSEGE";
 			}
 
 			emit deleteInDbSignal(temp[0], temp[1], temp[2]);
