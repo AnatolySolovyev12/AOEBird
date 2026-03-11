@@ -19,10 +19,17 @@ class TelegramJacket : public QObject
 public:
 	TelegramJacket(QObject* parent = nullptr, QString m_token = "", QString m_chatId = "");
 
-	void sendMessage(const QString message);
+	void sendMessage(const QString chatId, const QString message);
+	void getUpdates();
+
+signals:
+	void sendToDataBaseChatIdAndPhoneNumber(QString chatId, QString phoneNumber);
 
 private:
 	QNetworkAccessManager* manager = nullptr;
 	QString token = "";
-	QString chatId = "";
+	QString chatIdAdmin = "";
+
+	bool isBusy = false;
+	qint64 iD;
 };

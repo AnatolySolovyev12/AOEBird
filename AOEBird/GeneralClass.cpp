@@ -18,6 +18,7 @@ GeneralClass::GeneralClass(QObject* parent)
 
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForTelegramWithParams, [this](QStringList tempList) {
 		tgClass = new TelegramJacket(nullptr, tempList[0], tempList[1]);
+		connect(tgClass, &TelegramJacket::sendToDataBaseChatIdAndPhoneNumber, dataBaseClass, &DataBaseClass::insertInTelegramPhoneTable);
 		});
 
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForSmsClassWithParams, [this](QStringList tempList) {
@@ -35,6 +36,7 @@ GeneralClass::GeneralClass(QObject* parent)
 			connect(checkClass, &CheckClass::sendMax, maxClass, &MaxClass::checkNumber);
 		if (readyTelegram)
 			connect(checkClass, &CheckClass::sendTelegram, tgClass, &TelegramJacket::sendMessage);
+
 		if (readyMail)
 			connect(checkClass, &CheckClass::sendMail, smtpClass, &SMTP::sendMail);
 		if (readySms)

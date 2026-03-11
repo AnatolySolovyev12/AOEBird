@@ -41,7 +41,7 @@ void CheckClass::checkValuesFromDb(QStringList temp)
 
 			if (temp[6] == "true" && m_readyTelegram) // Telegram
 			{
-				emit sendTelegram("TEST AUTO FOR TELEGRAM"); // надо рихтовать для отправки с chatId
+				emit sendTelegram("1443295378", "TEST AUTO FOR TELEGRAM"); // надо рихтовать для отправки с chatId
 				qDebug() << "TELEGRAM TEST MESSEGE";
 
 			}

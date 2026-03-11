@@ -69,6 +69,13 @@ void DataBaseClass::createMainTables()
 	}
 	else
 		qDebug() << "TABLE users WAS ADD OR SKIP";
+
+	if (!query.exec("CREATE TABLE IF NOT EXISTS telegramPhoneTable (chatId VARCHAR(20), phoneNumber VARCHAR(15), date DATE, time TIME, UNIQUE (chatId));"))
+	{
+		qDebug() << "Error in DataBaseClass::connectionToMainDb() when try to create telegramPhoneTable table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+	}
+	else
+		qDebug() << "TABLE telegramPhoneTable WAS ADD OR SKIP";
 }
 
 
@@ -133,8 +140,24 @@ void DataBaseClass::insertInQueueAndHistory(QStringList tempList)
 void DataBaseClass::getQueueValue()
 {
 	QList<QStringList>tempQListWIthStringList;
-	QSqlQuery query(mainDbConnection);
 	QString queryString = QString("SELECT * FROM queue_notice ORDER BY date, time");
+
+	if (mainDbConnection.isOpen())
+	{
+	}
+	else
+	{
+		if (!mainDbConnection.open())
+		{
+			qDebug() << "Error in DataBaseClass::getQueueValue() when check database is OPEN." << "\nError text:\n" << mainDbConnection.lastError().text();
+		}
+		else
+		{
+			qDebug() << "Reconnect to PostgreSQL data base (" << mainDbConnection.databaseName() << ')';
+		}
+	}
+
+	QSqlQuery query(mainDbConnection);
 
 	if (!query.exec(queryString) || !query.next())
 	{
@@ -183,4 +206,24 @@ void DataBaseClass::deleteFromDb(QString Id, QString request, QString pos)
 	{
 		qDebug() << "VALUE WAS DELETE in queue_notice";
 	}
+}
+
+
+
+void DataBaseClass::insertInTelegramPhoneTable(QString chat, QString phone)
+{
+	QSqlQuery query(mainDbConnection);
+
+	query.prepare("INSERT INTO telegramPhoneTable (chatId, phoneNumber, date, time) VALUES (?, ?, ?, ?) ON CONFLICT (chatId) DO UPDATE SET phoneNumber = excluded.phoneNumber, date = excluded.date, time = excluded.time;");
+	query.addBindValue(chat);
+	query.addBindValue(phone);
+	query.addBindValue(QDate::currentDate().toString("yyyy-MM-dd"));
+	query.addBindValue(QTime::currentTime().toString());
+
+	if (!query.exec())
+	{
+		qDebug() << "Error in DataBaseClass::insertInTelegramPhoneTable() when try to telegramPhoneTable value. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
+	}
+	else
+		qDebug() << "ChatID / PHONE was add in telegramPhoneTable or update\n";
 }

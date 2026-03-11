@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QObject>
 #include <QSqlDatabase>
@@ -24,6 +24,7 @@ public:
 	void insertInQueueAndHistory(QStringList tempList);
 	void getQueueValue();
 	void deleteFromDb(QString Id, QString request, QString pos);
+	void insertInTelegramPhoneTable(QString chat, QString phone);
 
 signals:
 	void sendStringListFromQueue(QStringList temp);
