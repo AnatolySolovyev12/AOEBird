@@ -1,9 +1,10 @@
 ﻿#include "TelegramJacket.h"
 
 TelegramJacket::TelegramJacket(QObject* parent, QString m_token, QString m_chatId)
-	: QObject(parent), manager(new QNetworkAccessManager), token(m_token), chatIdAdmin(m_chatId)
+	: QObject(parent), manager(new QNetworkAccessManager), managerForCheckBot(new QNetworkAccessManager), token(m_token), chatIdAdmin(m_chatId)
 {
-	QTimer::singleShot(3000, [this]() {getUpdates();});
+	getMe();
+	QTimer::singleShot(3000, [this]() {getUpdates(); });
 }
 
 
@@ -138,5 +139,45 @@ void TelegramJacket::getUpdates()
 				// Пауза 10 секунд перед повторной попыткой при ошибке
 				QTimer::singleShot(10000, this, &TelegramJacket::getUpdates);
 			}
+		});
+}
+
+
+
+void TelegramJacket::getMe()
+{
+	// Формирование URL запроса
+	QString urlString = QString("https://api.telegram.org/bot%1/getMe").arg(token);
+
+	QUrl url(urlString);
+
+	// Создание запроса
+	QNetworkRequest request(url);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+	// Отправка запроса
+	managerForCheckBot->post(request, "");
+
+	// Обработчик ответа (если необходимо). Пригодится.
+	QObject::connect(managerForCheckBot, &QNetworkAccessManager::finished, [](QNetworkReply* reply)
+		{
+			if (reply->error() == QNetworkReply::NoError)
+			{
+				QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+				QJsonObject messageObj;
+
+				if (jsonDoc["ok"].toBool())
+				{
+					messageObj = jsonDoc["result"].toObject();
+					qDebug() << "Telegram Bot with name " + messageObj["first_name"].toString() + " is work";
+				}
+				else
+					qDebug() << "Error in TelegramJacket::getMe() because return FALSE in JSON";
+			}
+			else
+			{
+				qDebug() << "Error in TelegramJacket::getMe() when try to parse JSON: " << reply->error() << reply->errorString();
+			}
+			reply->deleteLater();
 		});
 }

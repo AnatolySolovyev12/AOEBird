@@ -21,12 +21,14 @@ public:
 
 	void sendMessage(const QString chatId, const QString message);
 	void getUpdates();
+	void getMe();
 
 signals:
 	void sendToDataBaseChatIdAndPhoneNumber(QString chatId, QString phoneNumber);
 
 private:
 	QNetworkAccessManager* manager = nullptr;
+	QNetworkAccessManager* managerForCheckBot = nullptr;
 	QString token = "";
 	QString chatIdAdmin = "";
 
