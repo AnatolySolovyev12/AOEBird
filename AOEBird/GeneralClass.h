@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QObject>
 
@@ -9,6 +9,7 @@
 #include "TelegramJacket.h"
 #include "CheckClass.h"
 #include <SMSClass.h>
+#include "TcpServerClass.h"
 
 class GeneralClass : public QObject
 {
@@ -26,5 +27,6 @@ private:
 	TelegramJacket* tgClass = nullptr;
 	CheckClass* checkClass = nullptr;
 	SMSClass* smsClass = nullptr;
+	TcpServerClass* serverClass = nullptr;
 };
 

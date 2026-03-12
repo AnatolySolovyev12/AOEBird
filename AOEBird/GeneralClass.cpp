@@ -27,6 +27,7 @@ GeneralClass::GeneralClass(QObject* parent)
 
 	connect(paramsClass, &ParamsClass::signalFromParamsClassForStartCheckClass, [this](bool readyMax, bool readyTelegram, bool readyMail, bool readySms) {
 		checkClass = new CheckClass(nullptr, readyMax, readyTelegram, readyMail, readySms);
+		serverClass = new TcpServerClass(nullptr);
 
 		connect(checkClass, &CheckClass::checkDbForEvent, dataBaseClass, &DataBaseClass::getQueueValue);
 		connect(dataBaseClass, &DataBaseClass::sendStringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);

@@ -13,7 +13,7 @@ CheckClass::~CheckClass()
 
 void CheckClass::checkValuesFromDb(QStringList temp, QString chatIdFromSignal)
 {
-	qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " Check...";
+	qDebug() << QDate::currentDate().toString("yyyy-MM-dd") + " " + QTime::currentTime().toString() + " Check...";
 
 	if (QDate::currentDate() >= QDate::fromString(temp[9], "yyyy-MM-dd"))
 	{
