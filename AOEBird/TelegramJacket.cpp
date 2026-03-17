@@ -136,6 +136,8 @@ void TelegramJacket::getUpdates()
 				reply->deleteLater();
 				isBusy = false;
 
+				manager->clearConnectionCache(); // Очищаем подключения для дальнейшего перезапуска
+
 				// Пауза 10 секунд перед повторной попыткой при ошибке
 				QTimer::singleShot(10000, this, &TelegramJacket::getUpdates);
 			}

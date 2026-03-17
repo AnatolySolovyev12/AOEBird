@@ -32,12 +32,13 @@ GeneralClass::GeneralClass(QObject* parent)
 		connect(checkClass, &CheckClass::checkDbForEvent, dataBaseClass, &DataBaseClass::getQueueValue);
 		connect(dataBaseClass, &DataBaseClass::sendStringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);
 		connect(checkClass, &CheckClass::deleteInDbSignal, dataBaseClass, &DataBaseClass::deleteFromDb);
+		connect(serverClass, &TcpServerClass::sendNewRecordToDb, dataBaseClass, &DataBaseClass::insertInQueueAndHistory);
+
 
 		if (readyMax)
 			connect(checkClass, &CheckClass::sendMax, maxClass, &MaxClass::checkNumber);
 		if (readyTelegram)
 			connect(checkClass, &CheckClass::sendTelegram, tgClass, &TelegramJacket::sendMessage);
-
 		if (readyMail)
 			connect(checkClass, &CheckClass::sendMail, smtpClass, &SMTP::sendMail);
 		if (readySms)

@@ -8,7 +8,11 @@
 #include <QSqlQuery>
 #include <iostream>
 #include <QDate>
-#include <qsqlerror>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
 
 class DataBaseClass  : public QObject
 {
@@ -21,7 +25,7 @@ public:
 	void connectionToMainDb(QStringList signalList);
 	void createMainTables();
 	void insertInUsers(QString tempMail, QString tempPass);
-	void insertInQueueAndHistory(QStringList tempList);
+	void insertInQueueAndHistory(QByteArray arrFromClient);
 	void getQueueValue();
 	void deleteFromDb(QString Id, QString request, QString pos);
 	void insertInTelegramPhoneTable(QString chat, QString phone);

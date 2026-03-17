@@ -28,7 +28,7 @@ SMSClass::SMSClass(QObject* parent, QStringList tempList)
 
 	if (!serial->open(QIODeviceBase::ReadWrite)) // открываем в режиме чтения и записи
 	{
-		std::cout << "Error in SMSClass wneh try to open " << tempList[0].toStdString() << ". Error:\n" << serial->errorString().toStdString() << std::endl;
+		std::cout << "Error in SMSClass when try to open " << tempList[0].toStdString() << ". Error:\n" << serial->errorString().toStdString() << std::endl;
 		readyForSend = false;
 	}
 	else

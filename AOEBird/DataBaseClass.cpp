@@ -100,39 +100,110 @@ void DataBaseClass::insertInUsers(QString tempMail, QString tempPass)
 
 
 
-void DataBaseClass::insertInQueueAndHistory(QStringList tempList)
+void DataBaseClass::insertInQueueAndHistory(QByteArray arrFromClient)
 {
-	QSqlQuery query(mainDbConnection);
-	QString dateCreate = QDate::currentDate().toString("yyyy-MM-dd");
-	QString timeCreate = QTime::currentTime().toString();
+	QJsonDocument jDoc = QJsonDocument::fromJson(arrFromClient.constData());
 
-	for (int countTable = 1; countTable <= 2; countTable++)
-	{
-		// В Postgre подготовленный запрос на вставку в таблицу почему то иначе интрепретируется и будет гарантированная ошибка. Делаем для таблицы втсавку через .arg() если это требуется.
-		query.prepare(QString("INSERT INTO %1 (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, mail_send, sms_send, date, time, date_create, time_create) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
-			.arg(countTable == 1 ? "queue_notice" : "history"));
-
-		query.addBindValue(tempList[0]);
-		query.addBindValue(tempList[1]);
-		query.addBindValue(tempList[2]);
-		query.addBindValue(tempList[3]);
-		query.addBindValue(tempList[4]);
-		query.addBindValue(tempList[5]);
-		query.addBindValue(tempList[6]);
-		query.addBindValue(tempList[7]);
-		query.addBindValue(tempList[8]);
-		query.addBindValue(tempList[9]);
-		query.addBindValue(tempList[10]);
-		query.addBindValue(dateCreate);
-		query.addBindValue(timeCreate);
-		
-		if (!query.exec())
-		{
-			qDebug() << "Error in DataBaseClass::insertInQueueAndHistory() when try to insert value in " << (countTable == 1 ? "queue_notice" : "history") << ". Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
-		}
-		else
-			qDebug() << "VALUE was add in " << (countTable == 1 ? "queue_notice\n" : "history\n");
+	if (jDoc.isNull()) {
+		qDebug() << "JSON parse error";
+		return;
 	}
+
+	if (!jDoc.isArray()) {
+		qDebug() << "Expected array at root";
+		return;
+	}
+
+	QJsonArray rootArray = jDoc.array();
+	if (rootArray.isEmpty()) return;
+
+	qDebug() << "Processing" << rootArray.size() << "task objects";
+
+	// Проходим по всем объектам в корневом массиве (task1, task2, task3...)
+	for (int taskIndex = 0; taskIndex < rootArray.size(); ++taskIndex) {
+		QJsonValue rootValue = rootArray[taskIndex];
+
+		if (!rootValue.isObject()) {
+			qDebug() << "Skipping non-object at index" << taskIndex;
+			continue;
+		}
+
+		QJsonObject taskObj = rootValue.toObject();
+
+		QString userId = taskObj["userId"].toString();
+		QString numberTask = taskObj["numberTask"].toString();
+
+		QJsonArray messegeArray = taskObj["messegeArray"].toArray();
+
+		qDebug() << "Task" << taskIndex + 1 << "- userId:" << userId
+			<< "numberTask:" << numberTask
+			<< "messages:" << messegeArray.size();
+
+		// Для каждого сообщения в массиве сообщений текущей задачи
+		for (int msgIndex = 0; msgIndex < messegeArray.size(); ++msgIndex) {
+			QJsonValue msgValue = messegeArray[msgIndex];
+
+			if (!msgValue.isObject()) {
+				qDebug() << "Skipping non-object message at index" << msgIndex;
+				continue;
+			}
+
+			QJsonObject msgObj = msgValue.toObject();
+
+			// Формируем список значений для вставки
+			QStringList values;
+			values << userId;                                   // id_user
+			values << numberTask;                               // id_request
+			values << msgObj["numberMessege"].toString();      // id_position
+			values << msgObj["phoneNumber"].toString();        // phone_number
+			values << msgObj["mail"].toString();               // mail
+			values << (msgObj["sendMax"].toInt() == 2 ? "true" : "false");      // max_send
+			values << (msgObj["sendTelegram"].toInt() == 2 ? "true" : "false"); // tg_send
+			values << (msgObj["sendMail"].toInt() == 2 ? "true" : "false");     // mail_send
+			values << (msgObj["sendSms"].toInt() == 2 ? "true" : "false");      // sms_send
+			values << msgObj["date"].toString();               // date
+			values << msgObj["time"].toString();               // time
+
+			QString dateCreate = QDate::currentDate().toString("yyyy-MM-dd");
+			QString timeCreate = QTime::currentTime().toString();
+
+			qDebug() << "  Message" << msgIndex + 1 << ":" << values;
+
+			// Вставка в таблицы (queue_notice и history)
+			for (int countTable = 1; countTable <= 2; countTable++) 
+			{
+				QSqlQuery query(mainDbConnection);
+
+				QString tableName = (countTable == 1) ? "queue_notice" : "history";
+
+				QString queryStr = QString("INSERT INTO %1 (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, mail_send, sms_send, date, time, date_create, time_create) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
+					.arg(tableName);
+
+				query.prepare(queryStr);
+
+				// Добавляем все 13 значений
+				for (const QString& value : values) {
+					query.addBindValue(value);
+				}
+				query.addBindValue(dateCreate);
+				query.addBindValue(timeCreate);
+
+				if (!query.exec()) 
+				{
+					qDebug() << "ERROR inserting into" << tableName;
+					qDebug() << "  Values:" << values;
+					qDebug() << "  DateCreate:" << dateCreate << "TimeCreate:" << timeCreate;
+					qDebug() << "  Error:" << query.lastError().text();
+				}
+				else 
+				{
+					qDebug() << "  SUCCESS inserted into" << tableName;
+				}
+			}
+		}
+	}
+
+	qDebug() << "Finished processing all tasks";
 }
 
 
@@ -195,7 +266,7 @@ void DataBaseClass::getQueueValue()
 			else
 				chatIdForTgInSignal = query.value(0).toString();
 		}
-		
+
 		emit sendStringListFromQueue(tempStringList, chatIdForTgInSignal);
 	}
 }

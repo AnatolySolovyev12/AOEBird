@@ -5,6 +5,8 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <QDate>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 
 class TcpServerClass  : public QObject
 {
@@ -18,8 +20,12 @@ public:
 	void clientDisconnected();
 	void serverRead();
 
+signals:
+	void sendNewRecordToDb(QByteArray newRecord);
+
 private:
 	QTcpServer* tcpServer = nullptr;
 	QTcpSocket* tcpSocket = nullptr;
 	QString lastTcpSocket = "";
+	QByteArray arrayBuffer;
 };

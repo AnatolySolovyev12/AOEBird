@@ -75,11 +75,39 @@ void TcpServerClass::serverRead()
 
 	while (tcpSocket->bytesAvailable() > 0)
 	{
-		QByteArray array = tcpSocket->readAll();
+		arrayBuffer += tcpSocket->readAll();
 
 		QDate curDate = QDate::currentDate();
 		QTime curTime = QTime::currentTime();
 
-		qDebug() << "TcpServer read from (" + lastTcpSocket + ") : " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString() << "\n" << array;
+		QRegularExpression strPattern(QString(R"(\$\d*)"));
+		QRegularExpressionMatch matchReg = strPattern.match(arrayBuffer);
+
+		QString CRC;
+
+		if (matchReg.hasMatch())
+		{
+			CRC = matchReg.captured().remove("$");
+
+			arrayBuffer.remove(arrayBuffer.indexOf("$"), matchReg.captured().length());
+		}
+
+		if (CRC.toInt() == arrayBuffer.length())
+		{
+			qDebug() << "CRC EQUAL " << CRC.toInt() << " " << arrayBuffer.length();
+
+			tcpSocket->write(QByteArray("OK"));
+
+			qDebug() << "TcpServer read from (" + lastTcpSocket + ") : " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString() << "\n" << arrayBuffer.constData();
+
+			emit sendNewRecordToDb(arrayBuffer);
+		}
+		else
+		{
+			qDebug() << "CRC NOT EQUAL " << CRC.toInt() << " " << arrayBuffer.length();
+			tcpSocket->write(QByteArray("RESEND"));
+		}
 	}
+
+	arrayBuffer.clear();
 }
