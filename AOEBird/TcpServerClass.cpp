@@ -100,7 +100,14 @@ void TcpServerClass::serverRead()
 
 			qDebug() << "TcpServer read from (" + lastTcpSocket + ") : " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString() << "\n" << arrayBuffer.constData();
 
-			emit sendNewRecordToDb(arrayBuffer);
+			if (arrayBuffer.contains("login"))
+			{
+				emit sendVerifyData(arrayBuffer);
+			}
+			else
+			{
+				emit sendNewRecordToDb(arrayBuffer);
+			}
 		}
 		else
 		{
@@ -110,4 +117,11 @@ void TcpServerClass::serverRead()
 	}
 
 	arrayBuffer.clear();
+}
+
+
+
+void TcpServerClass::sendVerithyResult(QByteArray result)
+{
+	tcpSocket->write(result);
 }

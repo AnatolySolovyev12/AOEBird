@@ -100,22 +100,102 @@ void DataBaseClass::insertInUsers(QString tempMail, QString tempPass)
 
 
 
+void DataBaseClass::verifyFuncDb(QByteArray verData)
+{
+	QJsonDocument jDoc = QJsonDocument::fromJson(verData.constData());
+	QString status = "";
+	QString userId = "";
+	QString numberTask = "";
+
+	if (jDoc.isNull()) {
+		qDebug() << "JSON parse error in verifyFuncDb()";
+		return;
+	}
+
+	QJsonObject rootArray = jDoc.object();
+
+	QSqlQuery query(mainDbConnection);
+
+	QString queryStr = QString("SELECT * FROM users WHERE mail = ? AND password = ?");
+
+	query.prepare(queryStr);
+
+	query.addBindValue(rootArray["login"].toString());
+	query.addBindValue(rootArray["password"].toString());
+
+	if (!query.exec() || !query.next())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in DataBaseClass::verifyFuncDb when try to get user DB. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
+			return;
+		}
+		else
+		{
+			qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET user from users";
+			status = "NOT FOUND USER";
+		}
+	}
+	else
+	{
+		status = "ACCESS";
+
+		userId = query.value(0).toString();
+
+		qDebug() << "fROM DB: " << query.value(0).toString() << "   " << query.value(1).toString() << "   " << query.value(2).toString();
+
+		if (!query.exec(QString("SELECT id_request FROM history WHERE id_user = '%1' ORDER BY id_request DESC").arg(userId)) || !query.next())
+		{
+			if (query.lastError().isValid())
+			{
+				qDebug() << "Error in DataBaseClass::verifyFuncDb when try to get id_request. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
+			}
+			else
+			{
+				qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET id_request history";
+				numberTask = "0";
+			}
+		}
+		else
+		{
+			numberTask = query.value(0).toString();
+
+			QJsonObject objWithParam
+			{
+				{ "status", status },
+				{ "userId", userId },
+				{ "lastTask", numberTask }
+			};
+
+			jDoc.setObject(objWithParam);
+			QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
+			qDebug() << "Result JSON: " << bytes.constData();
+			emit sendVerifyResult(bytes);
+		}
+	}
+}
+
+
 void DataBaseClass::insertInQueueAndHistory(QByteArray arrFromClient)
 {
 	QJsonDocument jDoc = QJsonDocument::fromJson(arrFromClient.constData());
 
 	if (jDoc.isNull()) {
-		qDebug() << "JSON parse error";
+		qDebug() << "JSON parse error in insertInQueueAndHistory()";
 		return;
 	}
 
 	if (!jDoc.isArray()) {
-		qDebug() << "Expected array at root";
+		qDebug() << "Expected array at root in insert InQueueAndHistory()";
 		return;
 	}
 
 	QJsonArray rootArray = jDoc.array();
-	if (rootArray.isEmpty()) return;
+	if (rootArray.isEmpty())
+	{
+		qDebug() << "Error in insertInQueueAndHistory() because array in JSON is empty";
+		return;
+	}
 
 	qDebug() << "Processing" << rootArray.size() << "task objects";
 
@@ -170,7 +250,7 @@ void DataBaseClass::insertInQueueAndHistory(QByteArray arrFromClient)
 			qDebug() << "  Message" << msgIndex + 1 << ":" << values;
 
 			// Вставка в таблицы (queue_notice и history)
-			for (int countTable = 1; countTable <= 2; countTable++) 
+			for (int countTable = 1; countTable <= 2; countTable++)
 			{
 				QSqlQuery query(mainDbConnection);
 
@@ -188,14 +268,14 @@ void DataBaseClass::insertInQueueAndHistory(QByteArray arrFromClient)
 				query.addBindValue(dateCreate);
 				query.addBindValue(timeCreate);
 
-				if (!query.exec()) 
+				if (!query.exec())
 				{
 					qDebug() << "ERROR inserting into" << tableName;
 					qDebug() << "  Values:" << values;
 					qDebug() << "  DateCreate:" << dateCreate << "TimeCreate:" << timeCreate;
 					qDebug() << "  Error:" << query.lastError().text();
 				}
-				else 
+				else
 				{
 					qDebug() << "  SUCCESS inserted into" << tableName;
 				}

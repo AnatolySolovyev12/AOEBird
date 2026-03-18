@@ -33,6 +33,10 @@ GeneralClass::GeneralClass(QObject* parent)
 		connect(dataBaseClass, &DataBaseClass::sendStringListFromQueue, checkClass, &CheckClass::checkValuesFromDb);
 		connect(checkClass, &CheckClass::deleteInDbSignal, dataBaseClass, &DataBaseClass::deleteFromDb);
 		connect(serverClass, &TcpServerClass::sendNewRecordToDb, dataBaseClass, &DataBaseClass::insertInQueueAndHistory);
+		connect(serverClass, &TcpServerClass::sendVerifyData, dataBaseClass, &DataBaseClass::verifyFuncDb);
+		connect(dataBaseClass, &DataBaseClass::sendVerifyResult, serverClass, &TcpServerClass::sendVerithyResult);
+
+
 
 
 		if (readyMax)

@@ -19,9 +19,11 @@ public:
 	void newConnection();
 	void clientDisconnected();
 	void serverRead();
+	void sendVerithyResult(QByteArray result);
 
 signals:
 	void sendNewRecordToDb(QByteArray newRecord);
+	void sendVerifyData(QByteArray byteData);
 
 private:
 	QTcpServer* tcpServer = nullptr;

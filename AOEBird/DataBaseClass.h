@@ -29,9 +29,12 @@ public:
 	void getQueueValue();
 	void deleteFromDb(QString Id, QString request, QString pos);
 	void insertInTelegramPhoneTable(QString chat, QString phone);
+	void verifyFuncDb(QByteArray verData);
 
 signals:
 	void sendStringListFromQueue(QStringList temp, QString chatIdTg);
+	void signalFromVerifyFunc(QByteArray result);
+	void sendVerifyResult(QByteArray result);
 
 
 private:
