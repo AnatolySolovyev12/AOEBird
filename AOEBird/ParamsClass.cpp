@@ -15,7 +15,7 @@ ParamsClass::ParamsClass(QObject* parent)
 
 	QTimer::singleShot(1000, [this]() 
 		{
-		readyPostreSQL = sendStringListForMainDb(); //////////////////надо добавить обратную связь не апредмет подклюбчения к БД
+		readyPostreSQL = sendStringListForMainDb();
 		readyMail = sendStringListForSmtpClass();
 		readyMax = sendStringListForMaxClass();
 		readyTelegram = sendStringListForTelegramClass();
