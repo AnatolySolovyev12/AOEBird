@@ -128,51 +128,51 @@ void DataBaseClass::verifyFuncDb(QByteArray verData)
 		if (query.lastError().isValid())
 		{
 			qDebug() << "Error in DataBaseClass::verifyFuncDb when try to get user DB. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
-			return;
+			status = "ERROR";
 		}
 		else
 		{
 			qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET user from users";
-			status = "NOT FOUND USER";
+			status = "NOTFOUNDUSER";
+		}
+	}
+
+	if (query.isValid())
+		status = "ACCESS";
+
+	userId = query.value(0).toString();
+
+	qDebug() << "fROM DB: " << query.value(0).toString() << "   " << query.value(1).toString() << "   " << query.value(2).toString();
+
+	if (!query.exec(QString("SELECT id_request FROM history WHERE id_user = '%1' ORDER BY id_request DESC").arg(userId)) || !query.next())
+	{
+		if (query.lastError().isValid())
+		{
+			qDebug() << "Error in DataBaseClass::verifyFuncDb when try to get id_request. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
+		}
+		else
+		{
+			qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET id_request history";
+			numberTask = "0";
 		}
 	}
 	else
 	{
-		status = "ACCESS";
-
-		userId = query.value(0).toString();
-
-		qDebug() << "fROM DB: " << query.value(0).toString() << "   " << query.value(1).toString() << "   " << query.value(2).toString();
-
-		if (!query.exec(QString("SELECT id_request FROM history WHERE id_user = '%1' ORDER BY id_request DESC").arg(userId)) || !query.next())
-		{
-			if (query.lastError().isValid())
-			{
-				qDebug() << "Error in DataBaseClass::verifyFuncDb when try to get id_request. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
-			}
-			else
-			{
-				qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET id_request history";
-				numberTask = "0";
-			}
-		}
-		else
-		{
-			numberTask = query.value(0).toString();
-
-			QJsonObject objWithParam
-			{
-				{ "status", status },
-				{ "userId", userId },
-				{ "lastTask", numberTask }
-			};
-
-			jDoc.setObject(objWithParam);
-			QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
-			qDebug() << "Result JSON: " << bytes.constData();
-			emit sendVerifyResult(bytes);
-		}
+		numberTask = query.value(0).toString();
 	}
+
+	QJsonObject objWithParam
+	{
+		{ "status", status },
+		{ "userId", userId },
+		{ "lastTask", numberTask }
+	};
+
+	jDoc.setObject(objWithParam);
+	QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
+	qDebug() << "Result JSON: " << bytes.constData();
+	emit sendVerifyResult(bytes);
+
 }
 
 

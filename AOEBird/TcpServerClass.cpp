@@ -96,18 +96,17 @@ void TcpServerClass::serverRead()
 		{
 			qDebug() << "CRC EQUAL " << CRC.toInt() << " " << arrayBuffer.length();
 
-			tcpSocket->write(QByteArray("OK"));
-
-			qDebug() << "TcpServer read from (" + lastTcpSocket + ") : " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString() << "\n" << arrayBuffer.constData();
-
 			if (arrayBuffer.contains("login"))
 			{
 				emit sendVerifyData(arrayBuffer);
 			}
 			else
 			{
+				tcpSocket->write(QByteArray("OK"));
 				emit sendNewRecordToDb(arrayBuffer);
 			}
+
+			qDebug() << "TcpServer read from (" + lastTcpSocket + ") : " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString() << "\n" << arrayBuffer.constData();
 		}
 		else
 		{
