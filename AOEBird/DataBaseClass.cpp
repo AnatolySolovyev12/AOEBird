@@ -49,14 +49,14 @@ void DataBaseClass::createMainTables()
 {
 	QSqlQuery query(mainDbConnection);
 
-	if (!query.exec("CREATE TABLE IF NOT EXISTS queue_notice (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME, date_create DATE, time_create TIME);"))
+	if (!query.exec("CREATE TABLE IF NOT EXISTS queue_notice (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME, date_create DATE, time_create TIME, text VARCHAR(500));"))
 	{
 		qDebug() << "Error in DataBaseClass::connectionToMainDb() when try to create queue_notice table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 	}
 	else
 		qDebug() << "TABLE queue_notice WAS ADD OR SKIP";
 
-	if (!query.exec("CREATE TABLE IF NOT EXISTS history (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME, date_create DATE, time_create TIME);"))
+	if (!query.exec("CREATE TABLE IF NOT EXISTS history (id_user INT, id_request INT, id_position INT, phone_number VARCHAR(14), mail VARCHAR(40), max_send BOOLEAN, tg_send BOOLEAN, mail_send BOOLEAN, sms_send BOOLEAN, date DATE, time TIME, date_create DATE, time_create TIME, text VARCHAR(500));"))
 	{
 		qDebug() << "Error in DataBaseClass::connectionToMainDb() when try to create history table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 	}
@@ -243,6 +243,8 @@ void DataBaseClass::insertInQueueAndHistory(QByteArray arrFromClient)
 			values << (msgObj["sendSms"].toInt() == 2 ? "true" : "false");      // sms_send
 			values << msgObj["date"].toString();               // date
 			values << msgObj["time"].toString();               // time
+			values << msgObj["text"].toString();               // time
+
 
 			QString dateCreate = QDate::currentDate().toString("yyyy-MM-dd");
 			QString timeCreate = QTime::currentTime().toString();
@@ -256,12 +258,11 @@ void DataBaseClass::insertInQueueAndHistory(QByteArray arrFromClient)
 
 				QString tableName = (countTable == 1) ? "queue_notice" : "history";
 
-				QString queryStr = QString("INSERT INTO %1 (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, mail_send, sms_send, date, time, date_create, time_create) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
+				QString queryStr = QString("INSERT INTO %1 (id_user, id_request, id_position, phone_number, mail, max_send, tg_send, mail_send, sms_send, date, time, text, date_create, time_create) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")
 					.arg(tableName);
 
 				query.prepare(queryStr);
 
-				// Добавляем все 13 значений
 				for (const QString& value : values) {
 					query.addBindValue(value);
 				}
