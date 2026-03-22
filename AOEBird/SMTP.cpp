@@ -28,9 +28,10 @@ SMTP::SMTP(const QString& user, const QString& pass, const QString& host, int po
 
 void SMTP::sendMail(const QString& to, const QString& subject, QString files)
 {
+    const QString& theme = "Уведомление"; // Тема письма
     message = "To: " + to + "\n"; // наполняем сообщение
     message.append("From: " + from + "\n");
-    message.append("Subject: " + subject + "\n");
+    message.append("Subject: " + theme + "\n");
 
 
     //Далеее используем MIME протокол для отправки вложенных файлов.
@@ -40,7 +41,7 @@ void SMTP::sendMail(const QString& to, const QString& subject, QString files)
     //message.append( "Content-Type: text/html\n\n" );  //Uncomment this for HTML formating, coment the line below
     message.append("Content-Type: text/plain\n\n"); //определяем формат тела письма. По сути это всегда "text/plain"
 
-    message.append("TEST BODY TO MESSEGE"); //////////////////////////////////////////////
+    message.append(subject); // Тело письма
 
     message.append("\n\n");
 

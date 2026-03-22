@@ -326,7 +326,7 @@ void DataBaseClass::getQueueValue()
 		QStringList tempStringList;
 		QString chatIdForTgInSignal = "";
 
-		for (int counter = 0; counter < 11; counter++)
+		for (int counter = 0; counter <= 13; counter++)
 		{
 			tempStringList << query.value(counter).toString();
 		}
