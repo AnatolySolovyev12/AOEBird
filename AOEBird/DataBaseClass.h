@@ -35,6 +35,7 @@ signals:
 	void sendStringListFromQueue(QStringList temp, QString chatIdTg);
 	void signalFromVerifyFunc(QByteArray result);
 	void sendVerifyResult(QByteArray result);
+	void sendRegPreResult(QByteArray result);
 
 
 private:

@@ -133,7 +133,14 @@ void DataBaseClass::verifyFuncDb(QByteArray verData)
 		else
 		{
 			qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET user from users";
-			status = "NOTFOUNDUSER";
+			if (verData.contains("register"))
+			{
+				status = "REGISTER";
+			}
+			else
+			{
+				status = "NOTFOUNDUSER";
+			}
 		}
 	}
 
@@ -171,8 +178,15 @@ void DataBaseClass::verifyFuncDb(QByteArray verData)
 	jDoc.setObject(objWithParam);
 	QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
 	qDebug() << "Result JSON: " << bytes.constData();
-	emit sendVerifyResult(bytes);
 
+	if (verData.contains("register"))
+	{
+		emit sendRegPreResult(bytes);
+	}
+	else
+	{
+		emit sendVerifyResult(bytes);
+	}
 }
 
 

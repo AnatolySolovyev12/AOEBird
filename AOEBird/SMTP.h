@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include <QtNetwork/QAbstractSocket>
 #include <QtNetwork/QSslSocket>
@@ -20,15 +20,14 @@ public:
         const QString& host, int port = 465, int timeout = 30000);
     ~SMTP();
 
-    void sendMail(const QString& to,
-        const QString& subject, QString files);
+    void sendMail(const QString& to, const QString& subject, const QString& textMessege, QString files);
 
 
 signals:
-    void status(const QString&); // самоделашный сигнал для вывод в объект основного класса. 
+    void status(const QString&); // СЃР°РјРѕРґРµР»Р°С€РЅС‹Р№ СЃРёРіРЅР°Р» РґР»СЏ РІС‹РІРѕРґ РІ РѕР±СЉРµРєС‚ РѕСЃРЅРѕРІРЅРѕРіРѕ РєР»Р°СЃСЃР°. 
 
 private slots:
-    //сигналы для них используются бибилиотечные
+    //СЃРёРіРЅР°Р»С‹ РґР»СЏ РЅРёС… РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ Р±РёР±РёР»РёРѕС‚РµС‡РЅС‹Рµ
     void stateChangedInfo(QAbstractSocket::SocketState socketState);
     void errorReceivedInfo(QAbstractSocket::SocketError socketError);
     void disconnectedInfo();

@@ -1,9 +1,10 @@
 ﻿#include "TcpServerClass.h"
 
-TcpServerClass::TcpServerClass(QObject *parent)
-	: QObject(parent), tcpServer(new QTcpServer)
+TcpServerClass::TcpServerClass(QObject* parent)
+	: QObject(parent), tcpServer(new QTcpServer), clearHash(new QTimer)
 {
 	connect(tcpServer, &QTcpServer::newConnection, this, &TcpServerClass::newConnection);
+	connect(clearHash, &QTimer::timeout, [this]() { hashArray.clear(); });
 
 	QTimer::singleShot(500, [this]() {
 
@@ -21,7 +22,8 @@ TcpServerClass::TcpServerClass(QObject *parent)
 
 
 TcpServerClass::~TcpServerClass()
-{}
+{
+}
 
 
 
@@ -67,7 +69,7 @@ void TcpServerClass::clientDisconnected()
 
 void TcpServerClass::serverRead()
 {
-	if (!tcpSocket) 
+	if (!tcpSocket)
 	{
 		qDebug() << "Warining: Socket is null in start TcpServerClass::serverRead()";
 		return;
@@ -96,9 +98,31 @@ void TcpServerClass::serverRead()
 		{
 			qDebug() << "CRC EQUAL " << CRC.toInt() << " " << arrayBuffer.length();
 
-			if (arrayBuffer.contains("login"))
+			if (arrayBuffer.contains("auth"))
 			{
 				emit sendVerifyData(arrayBuffer);
+			}
+			else if (arrayBuffer.contains("register"))
+			{
+				emit sendVerifyData(arrayBuffer);
+			}
+			else if (arrayBuffer.contains("registerCode"))
+			{
+				QJsonDocument jDoc = QJsonDocument::fromJson(arrayBuffer.constData());
+
+				if (jDoc.isNull()) {
+					qDebug() << "JSON parse error in TcpServerClass::serverRead()";
+					arrayBuffer.clear();
+					return;
+				}
+
+				QJsonObject rootArray = jDoc.object();
+
+				if (hashArray.find(rootArray["codeMail"].toString()) != hashArray.constEnd())
+				{
+					clearHash->stop();
+					emit setNewUser(rootArray["login"].toString(), rootArray["password"].toString());
+				}
 			}
 			else
 			{
@@ -120,7 +144,74 @@ void TcpServerClass::serverRead()
 
 
 
+
+
 void TcpServerClass::sendVerithyResult(QByteArray result)
 {
 	tcpSocket->write(result);
+}
+
+
+
+void TcpServerClass::sendRegResult(QByteArray result)
+{
+	if (result.contains("REGISTER"))
+	{
+		QJsonDocument jDoc = QJsonDocument::fromJson(arrayBuffer.constData());
+
+		if (jDoc.isNull()) {
+			qDebug() << "JSON parse error in TcpServerClass::sendRegResult()";
+			return;
+		}
+
+		QString tempCode = getRandomCode();
+
+		QJsonObject rootArray = jDoc.object();
+
+		hashArray.insert(tempCode, QPair<QString, QString>(rootArray["login"].toString(), rootArray["password"].toString()));
+
+		qDebug() << hashArray;
+
+		emit sendEmailForRegistration(rootArray["login"].toString(), "Регистрация", tempCode, "");
+
+		clearHash->start(120000);
+	}
+
+	tcpSocket->write(result);
+}
+
+
+
+int TcpServerClass::getRandomNumber(int min, int max)
+{
+	static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
+	// Равномерно распределяем рандомное число в нашем диапазоне
+	return static_cast<int>(rand() * fraction * (max - min + 1) + min);
+}
+
+
+
+QString TcpServerClass::getRandomCode()
+{
+	QString idString;
+
+	for (int val = 0; val < 8; val++)
+	{
+		int someNumber = 0;
+
+		if (getRandomNumber(0, 1))
+		{
+			someNumber = getRandomNumber(97, 102);
+		}
+		else
+		{
+			someNumber = getRandomNumber(48, 57);
+		}
+
+		char randomChar = static_cast<char>(someNumber);
+		QChar qch = randomChar;
+		idString += qch;
+	}
+
+	return idString;
 }

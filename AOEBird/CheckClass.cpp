@@ -48,7 +48,7 @@ void CheckClass::checkValuesFromDb(QStringList temp, QString chatIdFromSignal)
 			
 			if (temp[7] == "true" && m_readyMail) // Mail
 			{
-				emit sendMail(temp[4], temp[13], "");
+				emit sendMail(temp[4], "Уведомление", temp[13], "");
 				qDebug() << "MAIL TEST MESSEGE";
 			}
 

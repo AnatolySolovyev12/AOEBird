@@ -34,17 +34,19 @@ GeneralClass::GeneralClass(QObject* parent)
 		connect(checkClass, &CheckClass::deleteInDbSignal, dataBaseClass, &DataBaseClass::deleteFromDb);
 		connect(serverClass, &TcpServerClass::sendNewRecordToDb, dataBaseClass, &DataBaseClass::insertInQueueAndHistory);
 		connect(serverClass, &TcpServerClass::sendVerifyData, dataBaseClass, &DataBaseClass::verifyFuncDb);
+		connect(serverClass, &TcpServerClass::setNewUser, dataBaseClass, &DataBaseClass::insertInUsers);
 		connect(dataBaseClass, &DataBaseClass::sendVerifyResult, serverClass, &TcpServerClass::sendVerithyResult);
-
-
-
+		connect(dataBaseClass, &DataBaseClass::sendRegPreResult, serverClass, &TcpServerClass::sendRegResult);
 
 		if (readyMax)
 			connect(checkClass, &CheckClass::sendMax, maxClass, &MaxClass::checkNumber);
 		if (readyTelegram)
 			connect(checkClass, &CheckClass::sendTelegram, tgClass, &TelegramJacket::sendMessage);
 		if (readyMail)
+		{
 			connect(checkClass, &CheckClass::sendMail, smtpClass, &SMTP::sendMail);
+			connect(serverClass, &TcpServerClass::sendEmailForRegistration, smtpClass, &SMTP::sendMail);
+		}
 		if (readySms)
 			connect(checkClass, &CheckClass::sendSMSsignal, smsClass, &SMSClass::sendSMS);
 		});

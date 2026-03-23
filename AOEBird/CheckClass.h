@@ -19,7 +19,7 @@ signals:
 	void checkDbForEvent();
 	void sendMax(QString phoneNumber, QString messege);
 	void sendTelegram(QString chatId, QString messege);
-	void sendMail(QString eMail, QString messege, QString files);
+	void sendMail(QString eMail, QString subject, QString messege, QString files);
 	void sendSMSsignal(QString phoneNumber, QString messege);
 	void deleteInDbSignal(QString id, QString request, QString position);
 
