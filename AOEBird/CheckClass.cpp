@@ -4,7 +4,7 @@ CheckClass::CheckClass(QObject* parent, bool readyMax, bool readyTelegram, bool 
 	: QObject(parent), checkTimer(new QTimer()), m_readyMax(readyMax), m_readyTelegram(readyTelegram), m_readyMail(readyMail), m_readySms(readySms)
 {
 	connect(checkTimer, &QTimer::timeout, this, &CheckClass::checkDbForEvent);
-	checkTimer->start(5000);
+//	checkTimer->start(5000);
 }
 
 CheckClass::~CheckClass()

@@ -3,6 +3,8 @@
 TcpServerClass::TcpServerClass(QObject* parent)
 	: QObject(parent), tcpServer(new QTcpServer), clearHash(new QTimer)
 {
+	srand(static_cast<unsigned int>(time(0)));
+
 	connect(tcpServer, &QTcpServer::newConnection, this, &TcpServerClass::newConnection);
 	connect(clearHash, &QTimer::timeout, [this]() { hashArray.clear(); });
 
@@ -106,7 +108,7 @@ void TcpServerClass::serverRead()
 			{
 				emit sendVerifyData(arrayBuffer);
 			}
-			else if (arrayBuffer.contains("registerCode"))
+			else if (arrayBuffer.contains("CodeForReg"))
 			{
 				QJsonDocument jDoc = QJsonDocument::fromJson(arrayBuffer.constData());
 
