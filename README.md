@@ -18,4 +18,5 @@ What can:
 6) Валидировать подключаемых пользователей.
 7) Фиксировать историю заявок в базе данных.
 
-[capture_20260324225134350.bmp](https://github.com/user-attachments/files/26223052/capture_20260324225134350.bmp)
+![capture_20260324225134350](https://github.com/user-attachments/assets/ee50a2cc-e544-4f2b-814c-b9a2b84edc00)
+
