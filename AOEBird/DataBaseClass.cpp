@@ -116,36 +116,50 @@ void DataBaseClass::verifyFuncDb(QByteArray verData)
 
 	QSqlQuery query(mainDbConnection);
 
-	QString queryStr = QString("SELECT * FROM users WHERE mail = ? AND password = ?");
+	QString queryStr;
 
-	query.prepare(queryStr);
-
-	query.addBindValue(rootArray["login"].toString());
-	query.addBindValue(rootArray["password"].toString());
+	if (verData.contains("$&register&$"))
+	{
+		queryStr = QString("SELECT * FROM users WHERE mail = ?");
+		query.prepare(queryStr);
+		query.addBindValue(rootArray["login"].toString());
+	}
+	else
+	{
+		queryStr = QString("SELECT * FROM users WHERE mail = ? AND password = ?");
+		query.prepare(queryStr);
+		query.addBindValue(rootArray["login"].toString());
+		query.addBindValue(rootArray["password"].toString());
+	}
 
 	if (!query.exec() || !query.next())
 	{
 		if (query.lastError().isValid())
 		{
 			qDebug() << "Error in DataBaseClass::verifyFuncDb when try to get user DB. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
-			status = "ERROR";
+			status = "$&ERROR&$";
 		}
 		else
 		{
 			qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET user from users";
-			if (verData.contains("register"))
+
+			if (verData.contains("$&register&$"))
 			{
-				status = "REGISTER";
+				status = "$&REGISTER&$";
 			}
 			else
 			{
-				status = "NOTFOUNDUSER";
+				status = "$&NOTFOUNDUSER&$";
 			}
 		}
 	}
 
-	if (query.isValid())
-		status = "ACCESS";
+	if (query.isValid() && !verData.contains("$&register&$"))
+		status = "$&ACCESS&$";
+	if ((rootArray["login"].toString() == query.value(1).toString()) && verData.contains("$&register&$"))
+		status = "$&USERREGISTEREARLIER&$";
+
+	qDebug() << rootArray["login"].toString() + "   " + query.value(1).toString();
 
 	userId = query.value(0).toString();
 
@@ -179,7 +193,7 @@ void DataBaseClass::verifyFuncDb(QByteArray verData)
 	QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
 	qDebug() << "Result JSON: " << bytes.constData();
 
-	if (verData.contains("register"))
+	if (verData.contains("$&register&$"))
 	{
 		emit sendRegPreResult(bytes);
 	}

@@ -47,7 +47,7 @@ void TcpServerClass::newConnection()
 
 	lastTcpSocket = tcpSocket->peerAddress().toString().sliced(7);
 
-	qDebug() << "Connect from host (" + lastTcpSocket + ") - " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString();
+	qDebug() << "\n" << "Connect from host (" + lastTcpSocket + ") - " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString();
 }
 
 
@@ -56,7 +56,7 @@ void TcpServerClass::clientDisconnected()
 {
 	if (tcpSocket == nullptr)
 	{
-		qDebug() << "tcpSocket (" + lastTcpSocket + ") was disconnect but mTcpSocket was nullptr";
+		qDebug() << "tcpSocket (" + lastTcpSocket + ") was disconnect but mTcpSocket was nullptr" << "\n";
 		return;
 	}
 
@@ -84,31 +84,31 @@ void TcpServerClass::serverRead()
 		QDate curDate = QDate::currentDate();
 		QTime curTime = QTime::currentTime();
 
-		QRegularExpression strPattern(QString(R"(\$\d*)"));
+		QRegularExpression strPattern(QString(R"(\%\d*)"));
 		QRegularExpressionMatch matchReg = strPattern.match(arrayBuffer);
 
 		QString CRC;
 
 		if (matchReg.hasMatch())
 		{
-			CRC = matchReg.captured().remove("$");
+			CRC = matchReg.captured().remove("%");
 
-			arrayBuffer.remove(arrayBuffer.indexOf("$"), matchReg.captured().length());
+			arrayBuffer.remove(arrayBuffer.indexOf("%"), matchReg.captured().length());
 		}
 
 		if (CRC.toInt() == arrayBuffer.length())
 		{
 			qDebug() << "CRC EQUAL " << CRC.toInt() << " " << arrayBuffer.length();
 
-			if (arrayBuffer.contains("auth"))
+			if (arrayBuffer.contains("$&auth&$"))
 			{
 				emit sendVerifyData(arrayBuffer);
 			}
-			else if (arrayBuffer.contains("register"))
+			else if (arrayBuffer.contains("$&register&$"))
 			{
 				emit sendVerifyData(arrayBuffer);
 			}
-			else if (arrayBuffer.contains("CodeForReg"))
+			else if (arrayBuffer.contains("$&CodeForReg&$"))
 			{
 				QJsonDocument jDoc = QJsonDocument::fromJson(arrayBuffer.constData());
 
@@ -124,11 +124,35 @@ void TcpServerClass::serverRead()
 				{
 					clearHash->stop();
 					emit setNewUser(rootArray["login"].toString(), rootArray["password"].toString());
+					
+					QJsonObject objWithParam
+					{
+						{ "status", "$&REGISTERISDONE&$" }
+					};
+
+					jDoc.setObject(objWithParam);
+
+					QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
+
+					tcpSocket->write(bytes);
+				}
+				else
+				{
+					QJsonObject objWithParam
+					{
+						{ "status", "$&INCORRECTREGISTERCODE&$" }
+					};
+
+					jDoc.setObject(objWithParam);
+
+					QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
+
+					tcpSocket->write(bytes);
 				}
 			}
 			else
 			{
-				tcpSocket->write(QByteArray("OK"));
+				tcpSocket->write(QByteArray("$&OK&$"));
 				emit sendNewRecordToDb(arrayBuffer);
 			}
 
@@ -137,7 +161,7 @@ void TcpServerClass::serverRead()
 		else
 		{
 			qDebug() << "CRC NOT EQUAL " << CRC.toInt() << " " << arrayBuffer.length();
-			tcpSocket->write(QByteArray("RESEND"));
+			tcpSocket->write(QByteArray("$&RESEND&$"));
 		}
 	}
 
@@ -157,7 +181,7 @@ void TcpServerClass::sendVerithyResult(QByteArray result)
 
 void TcpServerClass::sendRegResult(QByteArray result)
 {
-	if (result.contains("REGISTER"))
+	if (result.contains("$&REGISTER&$"))
 	{
 		QJsonDocument jDoc = QJsonDocument::fromJson(arrayBuffer.constData());
 
