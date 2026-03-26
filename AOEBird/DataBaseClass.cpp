@@ -75,7 +75,7 @@ void DataBaseClass::createMainTables()
 		qDebug() << "Error in DataBaseClass::connectionToMainDb() when try to create telegramPhoneTable table. Query:\n" << query.lastQuery() << "\nError text:\n" << query.lastError().text();
 	}
 	else
-		qDebug() << "TABLE telegramPhoneTable WAS ADD OR SKIP";
+		qDebug() << "TABLE telegramPhoneTable WAS ADD OR SKIP\n";
 }
 
 

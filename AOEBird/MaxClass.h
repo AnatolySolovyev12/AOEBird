@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <qapplication.h>
 #include <QObject>
@@ -24,6 +24,7 @@ public:
 public slots:
 	void sendMessage(const QString phoneNumber, const QString message);
 	void checkNumber(const QString phoneNumber, const QString message);
+	void getstateInstance();
 
 signals:
 	void sendAfterGetChatId(const QString chatIdFromSignal, const QString messege);
