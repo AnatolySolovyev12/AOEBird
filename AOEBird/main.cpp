@@ -2,9 +2,12 @@
 #include <QtCore/QCoreApplication>
 #include <GeneralClass.h>
 #include <Windows.h>
+#include <clocale>
 
 int main(int argc, char *argv[])
 {
+    SetConsoleCP(65001);        // UTF‑8 вход
+    SetConsoleOutputCP(65001);  // UTF‑8 вывод
     setlocale(LC_ALL, "ru_RU.UTF-8");
 
     QCoreApplication app(argc, argv);
