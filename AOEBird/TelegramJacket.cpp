@@ -71,7 +71,6 @@ void TelegramJacket::getUpdates()
 
 	QObject::connect(reply, &QNetworkReply::finished, [reply, this]()
 		{
-
 			if (reply->error() == QNetworkReply::NoError)
 			{
 				QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());

@@ -47,7 +47,7 @@ void TcpServerClass::newConnection()
 
 	lastTcpSocket = tcpSocket->peerAddress().toString().sliced(7);
 
-	qDebug() << "\n" << "Connect from host (" + lastTcpSocket + ") - " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString();
+	qDebug() << "\n\n" << "Connect from host (" + lastTcpSocket + ") - " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString() << "\n";
 }
 
 
@@ -61,7 +61,7 @@ void TcpServerClass::clientDisconnected()
 	}
 
 	tcpSocket->close();
-	qDebug() << "tcpSocket (" + lastTcpSocket + ") was disconnect and close";
+	qDebug() << "tcpSocket (" + lastTcpSocket + ") was disconnect and close" << "\n";
 
 	delete tcpSocket;
 	tcpSocket = nullptr;

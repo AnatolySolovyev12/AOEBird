@@ -347,7 +347,7 @@ void DataBaseClass::getQueueValue()
 			qDebug() << "Error in DataBaseClass::getQueueValue() when try to get values from queue_notice. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
 		}
 		else
-			qDebug() << QDate::currentDate().toString("yyyy-MM-dd") << " " << QTime::currentTime() << " NOT GET from queue_notice";
+			std::cout << "\r" << QDate::currentDate().toString("yyyy-MM-dd").toStdString() << " " << QTime::currentTime().toString("hh:mm:ss").toStdString() << " queue_notice is empty";
 	}
 	else
 	{
