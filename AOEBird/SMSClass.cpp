@@ -7,7 +7,7 @@ SMSClass::SMSClass(QObject* parent, QStringList tempList)
 		{
 			if (error != QSerialPort::NoError)
 			{
-				qDebug() << "\nError occurred: " << error;
+				std::cout << "\n\n" << "Error occurred: " << error;
 
 				if (error == QSerialPort::ResourceError)
 				{
@@ -162,7 +162,7 @@ void SMSClass::checkAndReconnectComPort()
 	{
 		if (!serial->open(QIODeviceBase::ReadWrite)) // открываем в режиме чтения и записи
 		{
-			std::cout << "\n" << "Error in SMSClass when try to open " << serial->portName().toStdString() << ". Error: " << serial->errorString().toStdString() << "\n\n";;
+			std::cout << "\nError in SMSClass when try to open " << serial->portName().toStdString() << ". Error: " << serial->errorString().toStdString() << "\n\n";;
 			readyForSend = false;
 		}
 		else
