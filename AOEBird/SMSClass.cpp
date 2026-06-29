@@ -40,7 +40,7 @@ SMSClass::SMSClass(QObject* parent, QStringList tempList)
 	}
 
 	connect(checkComTimer, &QTimer::timeout, this, &SMSClass::checkAndReconnectComPort);
-	checkComTimer->start(8000);
+	checkComTimer->start(180000);
 }
 
 SMSClass::~SMSClass()
@@ -129,7 +129,8 @@ void SMSClass::sendSMS(const QString& phone, const QString& text)
 		//To exit without sending the message issue ESC char(0x1B hex).
 
 		serial->write(smsData);
-		//	qDebug() << "SMS sent:" << smsData;
+
+		qDebug() << "SMS messege was send. Response:";
 		});
 }
 

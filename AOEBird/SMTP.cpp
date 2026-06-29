@@ -126,7 +126,7 @@ void SMTP::disconnectedInfo()
 
 void SMTP::connectedInfo()
 {
-    qDebug() << "Connected to SMTP server";
+    //qDebug() << "Connected to SMTP server"; // убрать комментарий если важно видеть что сокет подключился к серверу
 }
 
 
@@ -278,11 +278,11 @@ void SMTP::readyReadFromSocket()
     else if (state == Quit && responseLine == "250")
     {
         //  QMessageBox::information(0, tr("Qt Simple SMTP client"), tr("Message was send.\n\n"));
-        qDebug() << "Message was send";
+        qDebug() << "SMTP messege was send. Response:" << responseLine;
         *t << "QUIT\r\n";
         t->flush();
         state = Close;
-        emit status(tr("Message sent")); // emit - макрос сомнительной полезнлости
+        //emit status(tr("Message sent")); // emit - макрос сомнительной полезнлости
     }
 
 

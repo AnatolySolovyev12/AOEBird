@@ -37,20 +37,20 @@ void CheckClass::checkValuesFromDb(QStringList temp, QString chatIdFromSignal)
 				}
 
 				emit sendMax(temp[3], temp[13]);
-				qDebug() << "MAX TEST MESSEGE";
+				qDebug() << "MAX MESSEGE";
 			}
 
 			if (temp[6] == "true" && m_readyTelegram && chatIdFromSignal != "") // Telegram
 			{
 				emit sendTelegram(chatIdFromSignal, temp[13]); // надо рихтовать для отправки с chatId
-				qDebug() << "TELEGRAM TEST MESSEGE";
+				qDebug() << "TELEGRAM MESSEGE";
 
 			}
 			
 			if (temp[7] == "true" && m_readyMail) // Mail
 			{
 				emit sendMail(temp[4], "Уведомление", temp[13], "");
-				qDebug() << "MAIL TEST MESSEGE";
+				qDebug() << "MAIL MESSEGE";
 			}
 
 			if (temp[8] == "true" && m_readySms) // SMS
@@ -69,7 +69,7 @@ void CheckClass::checkValuesFromDb(QStringList temp, QString chatIdFromSignal)
 				}
 
 				emit sendSMSsignal(tempNumber, temp[13]);
-				qDebug() << "SMS TEST MESSEGE";
+				qDebug() << "SMS MESSEGE";
 			}
 
 			emit deleteInDbSignal(temp[0], temp[1], temp[2]);

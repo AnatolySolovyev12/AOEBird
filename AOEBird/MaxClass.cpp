@@ -45,7 +45,7 @@ void MaxClass::sendMessage(const QString phoneNumber, const QString message)
 		if (reply->error() == QNetworkReply::NoError)
 		{
 			QString response = reply->readAll();
-			qDebug() << response;
+			qDebug() << "MAX messege was send. Response: " << response;
 		}
 		else
 		{
