@@ -487,6 +487,7 @@ void DataBaseClass::getHistoryFunc(QByteArray historyData)
 			do {
 
 				arrHistory.append(QJsonObject{
+
 					{ "id_user", query.value(0).toString() },
 		            { "id_request", query.value(1).toString() },
 		            { "id_position", query.value(2).toString() },
@@ -508,7 +509,7 @@ void DataBaseClass::getHistoryFunc(QByteArray historyData)
 
 			jDoc.setArray(arrHistory);
 
-			jDoc.setObject(QJsonObject{ {"$&HISTORY&$", "true"} });
+			jDoc.setObject(QJsonObject{ {"status", "$&HISTORY&$"} });
 
 			QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
 
