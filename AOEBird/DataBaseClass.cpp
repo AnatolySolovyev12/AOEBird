@@ -480,7 +480,14 @@ void DataBaseClass::getHistoryFunc(QByteArray historyData)
 				qDebug() << "Error in DataBaseClass::getHistoryFunc() when try get history records. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
 			}
 			else
+			{
 				qDebug() << "NOT GET in history";
+
+				jDoc.setObject(QJsonObject{ {"status", "$&HISTORY&$"} });
+				QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
+
+				emit sendHistoryResult(bytes);
+			}
 		}
 		else
 		{
@@ -507,9 +514,12 @@ void DataBaseClass::getHistoryFunc(QByteArray historyData)
 		
 			} while (query.next());
 
-			jDoc.setArray(arrHistory);
+			jDoc.setObject(QJsonObject{
 
-			jDoc.setObject(QJsonObject{ {"status", "$&HISTORY&$"} });
+				{"status", "$&HISTORY&$"},
+				{"array", arrHistory}
+
+				});
 
 			QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
 
