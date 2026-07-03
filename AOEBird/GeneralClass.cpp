@@ -35,8 +35,10 @@ GeneralClass::GeneralClass(QObject* parent)
 		connect(serverClass, &TcpServerClass::sendNewRecordToDb, dataBaseClass, &DataBaseClass::insertInQueueAndHistory);
 		connect(serverClass, &TcpServerClass::sendVerifyData, dataBaseClass, &DataBaseClass::verifyFuncDb);
 		connect(serverClass, &TcpServerClass::setNewUser, dataBaseClass, &DataBaseClass::insertInUsers);
+		connect(serverClass, &TcpServerClass::getHistory, dataBaseClass, &DataBaseClass::getHistoryFunc);
 		connect(dataBaseClass, &DataBaseClass::sendVerifyResult, serverClass, &TcpServerClass::sendVerithyResult);
 		connect(dataBaseClass, &DataBaseClass::sendRegPreResult, serverClass, &TcpServerClass::sendRegResult);
+		connect(dataBaseClass, &DataBaseClass::sendHistoryResult, serverClass, &TcpServerClass::sendVerithyResult);
 
 		if (readyMax)
 			connect(checkClass, &CheckClass::sendMax, maxClass, &MaxClass::checkNumber);

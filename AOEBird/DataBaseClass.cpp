@@ -248,7 +248,8 @@ void DataBaseClass::insertInQueueAndHistory(QByteArray arrFromClient)
 			<< "messages:" << messegeArray.size();
 
 		// Для каждого сообщения в массиве сообщений текущей задачи
-		for (int msgIndex = 0; msgIndex < messegeArray.size(); ++msgIndex) {
+		for (int msgIndex = 0; msgIndex < messegeArray.size(); ++msgIndex) 
+		{
 			QJsonValue msgValue = messegeArray[msgIndex];
 
 			if (!msgValue.isObject()) {
@@ -272,7 +273,6 @@ void DataBaseClass::insertInQueueAndHistory(QByteArray arrFromClient)
 			values << msgObj["date"].toString();               // date
 			values << msgObj["time"].toString();               // time
 			values << msgObj["text"].toString();               // time
-
 
 			QString dateCreate = QDate::currentDate().toString("yyyy-MM-dd");
 			QString timeCreate = QTime::currentTime().toString();
@@ -425,4 +425,92 @@ void DataBaseClass::insertInTelegramPhoneTable(QString chat, QString phone)
 	}
 	else
 		qDebug() << "ChatID / PHONE was add in telegramPhoneTable or update\n";
+}
+
+
+/*
+{ "$&history&$", "true" },
+{ "firstDate", dateFirst },
+{ "secondDate", dateSecond },
+{ "iD", QString::number(iD) },
+{ "onlyYou", onlyYou }
+*/
+void DataBaseClass::getHistoryFunc(QByteArray historyData)
+{
+	QJsonDocument jDoc = QJsonDocument::fromJson(historyData.constData());
+	QString status = "";
+	QString userId = "";
+	QString numberTask = "";
+
+	if (jDoc.isNull()) {
+		qDebug() << "JSON parse error in getHistoryFunc()";
+		return;
+	}
+
+	QJsonObject rootArray = jDoc.object();
+
+	QSqlQuery query(mainDbConnection);
+
+	QString queryStr;
+
+	QJsonArray arrHistory;
+
+	if (historyData.contains("$&history&$"))
+	{
+		if (rootArray["onlyYou"].toString() == "true")
+		{
+			queryStr = QString("select * from history where id_user = ? and date_create >= ? and date_create <= ?");
+			query.prepare(queryStr);
+			query.addBindValue(rootArray["iD"].toString());
+			query.addBindValue(rootArray["firstDate"].toString());
+			query.addBindValue(rootArray["secondDate"].toString());
+		}
+		else
+		{
+			queryStr = QString("select * from history where date_create >= ? and date_create <= ?");
+			query.prepare(queryStr);
+			query.addBindValue(rootArray["firstDate"].toString());
+			query.addBindValue(rootArray["secondDate"].toString());
+		}
+
+		if (!query.exec() || !query.next())
+		{
+			if (query.lastError().isValid())
+			{
+				qDebug() << "Error in DataBaseClass::getHistoryFunc() when try get history records. Error:\n" << query.lastError().text() << "Query: \n" << query.lastQuery();
+			}
+			else
+				qDebug() << "NOT GET in history";
+		}
+		else
+		{
+			do {
+
+				arrHistory.append(QJsonObject{
+					{ "id_user", query.value(0).toString() },
+		            { "id_request", query.value(1).toString() },
+		            { "id_position", query.value(2).toString() },
+					{ "phone_number", query.value(3).toString() },
+					{ "mail", query.value(4).toString() },
+					{ "max_send", query.value(5).toString() },
+					{ "tg_send", query.value(6).toString() },
+					{ "mail_send", query.value(7).toString() },
+					{ "sms_send", query.value(8).toString() },
+					{ "date", query.value(9).toString() },
+					{ "time", query.value(10).toString() },
+					{ "date_create", query.value(11).toString() },
+					{ "time_create", query.value(12).toString() },
+					{ "text", query.value(13).toString() }
+
+					});
+		
+			} while (query.next());
+
+			jDoc.setArray(arrHistory);
+
+			QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
+
+			emit sendHistoryResult(bytes);
+		}
+	}
 }

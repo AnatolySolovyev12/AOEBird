@@ -30,13 +30,15 @@ public:
 	void deleteFromDb(QString Id, QString request, QString pos);
 	void insertInTelegramPhoneTable(QString chat, QString phone);
 	void verifyFuncDb(QByteArray verData);
+	void getHistoryFunc(QByteArray historyData);
+
 
 signals:
 	void sendStringListFromQueue(QStringList temp, QString chatIdTg);
 	void signalFromVerifyFunc(QByteArray result);
 	void sendVerifyResult(QByteArray result);
 	void sendRegPreResult(QByteArray result);
-
+	void sendHistoryResult(QByteArray result);
 
 private:
 	QSqlDatabase mainDbConnection;

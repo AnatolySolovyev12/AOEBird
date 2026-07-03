@@ -37,6 +37,8 @@ signals:
 	void checkUserForRegister(QByteArray byteData);
 	void sendEmailForRegistration(QString eMail, QString subject, QString messege, QString files);
 	void setNewUser(QString log, QString pass);
+	void getHistory(QByteArray newRecord);
+
 
 
 private:

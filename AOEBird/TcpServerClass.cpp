@@ -150,6 +150,10 @@ void TcpServerClass::serverRead()
 					tcpSocket->write(bytes);
 				}
 			}
+			else if (arrayBuffer.contains("$&history&$"))
+			{
+				emit getHistory(arrayBuffer);
+			}
 			else
 			{
 				tcpSocket->write(QByteArray("$&OK&$"));
@@ -167,8 +171,6 @@ void TcpServerClass::serverRead()
 
 	arrayBuffer.clear();
 }
-
-
 
 
 
