@@ -61,7 +61,7 @@ void TcpServerClass::clientDisconnected()
 	}
 
 	tcpSocket->close();
-	qDebug() << '\n' << "tcpSocket (" + lastTcpSocket + ") was disconnect and close" << "\n";
+	qDebug() << '\n' << "\ntcpSocket (" + lastTcpSocket + ") was disconnect and close" << "\n";
 
 	delete tcpSocket;
 	tcpSocket = nullptr;
@@ -100,7 +100,7 @@ void TcpServerClass::serverRead()
 		{
 			qDebug() << "CRC EQUAL " << CRC.toInt() << " " << arrayBuffer.length();
 
-			qDebug() << "RX (" + lastTcpSocket + ") : " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString() << " << " << arrayBuffer.constData();
+			qDebug() << "\nRX (" + lastTcpSocket + ") : " + curDate.toString("dd-MM-yyyy") + " " + curTime.toString() << " << " << arrayBuffer.constData();
 
 			if (arrayBuffer.contains("$&auth&$"))
 			{
