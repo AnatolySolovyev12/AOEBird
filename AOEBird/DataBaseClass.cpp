@@ -428,13 +428,7 @@ void DataBaseClass::insertInTelegramPhoneTable(QString chat, QString phone)
 }
 
 
-/*
-{ "$&history&$", "true" },
-{ "firstDate", dateFirst },
-{ "secondDate", dateSecond },
-{ "iD", QString::number(iD) },
-{ "onlyYou", onlyYou }
-*/
+
 void DataBaseClass::getHistoryFunc(QByteArray historyData)
 {
 	QJsonDocument jDoc = QJsonDocument::fromJson(historyData.constData());

@@ -64,13 +64,13 @@ void SMSClass::readData()
 		{
 			if (testIsRunningForConnect)
 			{
-				qDebug() << "Test " + serial->portName() + " at \"AT\" with buffer: " << buffer << '\n'; // проверка доступности модема
+				//qDebug() << "Test " + serial->portName() + " at \"AT\" with buffer: " << buffer << '\n'; // проверка доступности модема
 				testIsRunningForConnect = false;
 			}
 
 			if (testIsRunningForSmsCentre)
 			{
-				qDebug() << "Test " + serial->portName() + " at \"AT+CSCA?\" with buffer: " << buffer << '\n'; // проверка регистрации симкарты в сети и наличияя СМС центра
+				//qDebug() << "Test " + serial->portName() + " at \"AT+CSCA?\" with buffer: " << buffer << '\n'; // проверка регистрации симкарты в сети и наличияя СМС центра
 				testIsRunningForSmsCentre = false;
 
 				if (buffer.contains("ERROR"))
@@ -89,7 +89,7 @@ void SMSClass::readData()
 		}
 		else
 		{
-			qDebug() << "RX:" << buffer << '\n';
+			//qDebug() << "RX:" << buffer << '\n';
 		}
 		buffer.clear();
 	}
