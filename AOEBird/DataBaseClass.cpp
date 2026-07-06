@@ -523,6 +523,8 @@ void DataBaseClass::getHistoryFunc(QByteArray historyData)
 
 			QByteArray bytes = jDoc.toJson(QJsonDocument::Compact);
 
+			qDebug() << bytes;///////////////
+
 			emit sendHistoryResult(bytes);
 		}
 	}
