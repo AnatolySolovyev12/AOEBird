@@ -56,12 +56,12 @@ void TcpServerClass::clientDisconnected()
 {
 	if (tcpSocket == nullptr)
 	{
-		qDebug() << '\n' << "tcpSocket (" + lastTcpSocket + ") was disconnect but mTcpSocket was nullptr" << "\n";
+		qDebug() << '\n' << "TcpSocket (" + lastTcpSocket + ") was disconnect but mTcpSocket was nullptr" << "\n";
 		return;
 	}
 
 	tcpSocket->close();
-	qDebug() << '\n' << "\ntcpSocket (" + lastTcpSocket + ") was disconnect and close" << "\n";
+	qDebug() << '\n\n' << "TcpSocket (" + lastTcpSocket + ") was disconnect and close" << "\n";
 
 	delete tcpSocket;
 	tcpSocket = nullptr;
