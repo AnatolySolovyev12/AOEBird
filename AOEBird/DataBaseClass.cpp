@@ -451,7 +451,7 @@ void DataBaseClass::getHistoryFunc(QByteArray historyData)
 
 	if (historyData.contains("$&history&$"))
 	{
-		if (rootArray["onlyYou"].toString() == "true")
+		if (rootArray["onlyYou"].toBool() == true)
 		{
 			queryStr = QString("select * from history where id_user = ? and date_create >= ? and date_create <= ?");
 			query.prepare(queryStr);
