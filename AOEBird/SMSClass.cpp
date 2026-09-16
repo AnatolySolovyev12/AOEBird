@@ -80,9 +80,9 @@ void SMSClass::readData()
 						qint64 rebootRetunrByte = serial->write(rebootComand);
 
 						if (rebootRetunrByte == -1)
-							qDebug() << "Device " + serial->portName() + " is not reboot on \"AT#REBOOT\"";
+							qDebug() << '\n' << "Device " + serial->portName() + " is not reboot on \"AT#REBOOT\"";
 						else
-							qDebug() << "Reboot " + serial->portName() + " at \"AT#REBOOT\"" << '\n';
+							qDebug() << '\n' << "Reboot " + serial->portName() + " at \"AT#REBOOT\"" << '\n';
 						});
 				}
 			}
