@@ -82,6 +82,7 @@ void SMTP::sendMail(const QString& to, const QString& subject, const QString& te
         qDebug() << socket->errorString();
     }
 
+    delete t;
     t = new QTextStream(socket); // будем принимать поток данных с указанного сокета
 }
 
